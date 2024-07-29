@@ -1,4 +1,4 @@
-function video_read(frames, video_object)
+function videoRead(frames, video_object)
 % video_read Play video frames in a figure window.
 %   video_read(frames, video_object) plays the video frames stored in the
 %   cell array 'frames' using the properties of 'video_object'.
