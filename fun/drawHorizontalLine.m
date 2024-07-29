@@ -1,4 +1,4 @@
-function pltImage = draw_horizontal_line(axes_im, selected_frame, y)
+function pltImage = drawHorizontalLine(axes_im, selected_frame, y)
 % draw_horizontal_line Draw horizontal lines on the image.
 %   pltImage = draw_horizontal_line(axes_im, selected_frame, y) draws
 %   horizontal lines at positions specified in 'y' on the 'selected_frame'

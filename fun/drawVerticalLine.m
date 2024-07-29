@@ -1,4 +1,4 @@
-    function pltImage = draw_vertical_line(axes_im, selected_frame, x)
+    function pltImage = drawVerticalLine(axes_im, selected_frame, x)
         % draw_vertical_line Draw vertical lines on the image.
         %   pltImage = draw_vertical_line(axes_im, selected_frame, x) draws vertical
         %   lines at positions specified in 'x' on the 'selected_frame' image
