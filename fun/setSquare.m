@@ -1,4 +1,4 @@
-function [X,Y] = set_square(selected_frame)
+function [X,Y] = setSquare(selected_frame)
 
 click_X = [];                                                      % global variable for click position
 click_Y = [];                                                      % global variable for click position
@@ -9,7 +9,7 @@ pltImage = image(selected_frame,'Parent',axes_im);           % image
 set(axes_im,'Layer','top','XTick',zeros(1,0),'YTick',zeros(1,0));  % set axe
 
 % interration function
-pltImage.ButtonDownFcn = @(src, event) axesClickCallback(src, event, frames_, frameindex_, axes_im,pltImage);
+pltImage.ButtonDownFcn = @(src, event) axesClickCallback(src, event, selected_frame, axes_im,pltImage);
 fig.WindowKeyPressFcn =@(fig,event) KeyPressFcn(fig,event);        % press "ok" to resume
 
 uiwait(fig)
@@ -32,7 +32,7 @@ end
     end
 
 % mouth click to resume
-    function axesClickCallback(~, event, frames_, frameindex_, axes_im,~)
+    function axesClickCallback(~, event, selected_frame, axes_im,~)
         % Check if left mouse button was clicked (event.Button == 1)
         if event.Button ==1 % rigth click
             click_position = axes_im.CurrentPoint(1,1:2); % mouse position in the axe
@@ -51,7 +51,7 @@ end
         end
 
         % plot line
-        [pltImage] = drawBoxCorner(axes_im,frames_,frameindex_,click_X,click_Y);
-        pltImage.ButtonDownFcn = @(src, event) axesClickCallback(src, event, frames_, frameindex_, axes_im,pltImage);
+        [pltImage] = drawBoxCorner(axes_im,selected_frame,click_X,click_Y);
+        pltImage.ButtonDownFcn = @(src, event) axesClickCallback(src, event, selected_frame, axes_im,pltImage);
     end
 end
