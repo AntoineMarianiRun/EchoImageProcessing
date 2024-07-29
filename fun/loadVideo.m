@@ -1,4 +1,4 @@
-function [frames, video_object] = load_video(path, fig)
+function [frames, video_object] = loadVideo(path, fig)
 % load_video Load video frames from a specified path.
 %   [frames, video_object] = load_video(path) loads the video specified by
 %   the given path and returns the frames in a cell array and the VideoReader

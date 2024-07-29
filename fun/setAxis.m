@@ -1,4 +1,4 @@
-function [output_position] = set_axis(frames,scaled_axis,frame_number)
+function [output_position] = setAxis(frames,scaled_axis,frame_number)
 if nargin < 3
     frame_number = 1 ;
 end
@@ -63,9 +63,9 @@ delete(fig)
 
         % function plot line
         if selected_axis == 1
-            [pltImage] = draw_vertical_line(axes_im, selected_frame, position);
+            [pltImage] = drawVerticalLine(axes_im, selected_frame, position);
         else
-            [pltImage] = draw_horizontal_line(axes_im, selected_frame, position);
+            [pltImage] = drawHorizontalLine(axes_im, selected_frame, position);
         end
         pltImage.ButtonDownFcn = @(src, event) axesClickCallback(src, event, selected_frame, axes_im,pltImage);
     end

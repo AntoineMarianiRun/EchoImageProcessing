@@ -1,6 +1,6 @@
 %% frame_read (AM : 24/01/2023)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function frame_read(frames, frame_number)
+function frameRead(frames, frame_number)
 % frame_read Display a specific frame from the video.
 %   frame_read(frames, frame_number) displays the specified frame from
 %   the cell array 'frames'.
