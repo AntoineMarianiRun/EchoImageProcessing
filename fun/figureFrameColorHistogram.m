@@ -1,4 +1,4 @@
-function figure_frame_color_histogram(video,videoidx,frameidx,results)
+function figureFrameColorHistogram(video,videoidx,frameidx,results)
 
 % color map
 barColors = length(video(videoidx).colorScale.colorScaleValue) -1 ;
