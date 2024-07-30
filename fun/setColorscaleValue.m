@@ -2,7 +2,7 @@ function [colorScaleValue] = setColorscaleValue(colorScaleRGBuint8,colorScaleRGB
 opts.Interpreter = 'tex'; opts.Default = 'Yes'; %option
 dlg = questdlg('What is the scale unit?',...
     'echo type',...
-    'kPa','m/s',opts);
+    "kPa","m/s",opts);
 if strcmpi(string(dlg),"kPa")
     txt = "kPa";
 elseif strcmpi(string(dlg),"m/s")
