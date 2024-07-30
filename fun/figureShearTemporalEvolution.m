@@ -1,4 +1,4 @@
-function figureShearTemporalEvolution(video,videoidx,results)
+function figureShearTemporalEvolution(results)
 % Sample data
 time = results.time; % Time vector
 mean_SWE = results.meanValue; % Sample mean data
