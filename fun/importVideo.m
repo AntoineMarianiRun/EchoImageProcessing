@@ -17,6 +17,7 @@ if length(videoPath)<=2
 
     video.name = videoName;
     video.path = videoPath;
+    video.videoObject = video_object;
     video.frame = frames;
     video.coef.x = coef_x;
     video.coef.y = coef_y;

@@ -24,6 +24,7 @@ for current_frame = 1 : 2 : video_object.NumFrames
     set(im, 'Layer', 'top', 'XTick', [], 'YTick', []);
 
     % Calculate wait time to maintain frame rate
+    elapsedTime = toc;
     waitTime = frameRate - elapsedTime;
     if waitTime > 0.01
         pause(waitTime);
