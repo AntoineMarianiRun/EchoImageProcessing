@@ -1,4 +1,4 @@
-function plotErrorMatrx(errMatrix)
+function plot3DErrorMatrix(errMatrix)
 % Condition pour remplacer les valeurs égales à 1 par NaN
 errMatrix(errMatrix == 1) = NaN;
 
@@ -9,7 +9,7 @@ errMatrix(errMatrix == 1) = NaN;
 mesh(x, y, errMatrix);
 
 % Ajuster l'échelle des couleurs à [0, 1]
-caxis([0 1]);
+caxis([0 .4]);
 
 % Ajouter une barre de couleur pour la légende des valeurs
 colorbar;
