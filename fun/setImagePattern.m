@@ -8,7 +8,7 @@ click_X = [];                                                              % glo
 click_Y = [];                                                              % global variable for click position
 
 
-fig = figure('Name', 'frame read','Color', [1 1 1],'ToolBar','none','MenuBar','none'); % figure
+fig = figure('Name', 'frame read','Color', [1 1 1])%,'ToolBar','none','MenuBar','none'); % figure
 axes_im = axes('Parent', fig ,'Position',[0 0 1 1]) ;                      % axis
 pltImage = image(selected_frame,'Parent',axes_im);                         % image
 set(axes_im,'Layer','top','XTick',zeros(1,0),'YTick',zeros(1,0));          % set axe
