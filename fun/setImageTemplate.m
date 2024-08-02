@@ -1,14 +1,22 @@
-function [X,Y,patternImage] = setImagePattern(selected_frame,lengthBox)
-if mod(lengthBox,2)~=1
-    lengthBox = lengthBox+1;
+function [X,Y,patternImage] = setImageTemplate(selected_frame,heigthBox,widthBox)
+
+% to have a center for the template
+if mod(heigthBox,2)~=1
+    heigthBox = heigthBox+1;
 end
+
+if mod(widthBox,2)~=1
+    widthBox = widthBox+1;
+end
+
+
 
 
 click_X = [];                                                              % global variable for click position
 click_Y = [];                                                              % global variable for click position
 
 
-fig = figure('Name', 'frame read','Color', [1 1 1])%,'ToolBar','none','MenuBar','none'); % figure
+fig = figure('Name', 'frame read','Color', [1 1 1]);%,'ToolBar','none','MenuBar','none'); % figure
 axes_im = axes('Parent', fig ,'Position',[0 0 1 1]) ;                      % axis
 pltImage = image(selected_frame,'Parent',axes_im);                         % image
 set(axes_im,'Layer','top','XTick',zeros(1,0),'YTick',zeros(1,0));          % set axe
@@ -24,7 +32,7 @@ delete(fig)
 % extract pattern
 X = click_X;
 Y = click_Y;
-patternImage = extractPattern(selected_frame,X,Y,lengthBox); 
+patternImage = corpImageAsRectangle(selected_frame,X,Y,heigthBox,widthBox); 
 
 % callback
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,7 +59,8 @@ patternImage = extractPattern(selected_frame,X,Y,lengthBox);
 
         % function plot line
 
-        [pltImage] = drawBoxPattern(axes_im,selected_frame,click_X,click_Y, lengthBox);
+%         [pltImage] = drawBoxPattern(axes_im,selected_frame,click_X,click_Y, lengthBox);
+        [pltImage] = drawBoxPattern(axes_im,selected_frame,click_X,click_Y,heigthBox,widthBox);
         pltImage.ButtonDownFcn = @(src, event) axesClickCallback(src, event, selected_frame, axes_im,pltImage);
     end
 

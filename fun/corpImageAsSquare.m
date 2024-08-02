@@ -1,4 +1,4 @@
-function patternImage = extractPattern(selected_frame,X,Y,lengthBox)
+function patternImage = corpImageAsSquare(selected_frame,X,Y,lengthBox)
 % set the box 
 cornerX = min(X)-floor(lengthBox/2);
 cornerY = min(Y)-floor(lengthBox/2);
