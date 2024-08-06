@@ -25,18 +25,18 @@ else
     error('Path must be a string or character vector.');
 end
 
-% Handle optional figure input
-if nargin < 2
-    fig = uifigure('Name', 'Video Import Tool', 'Color', [1 1 1]);
-    fig.Position(3:4) = [400 100];  % Width and height
-    fig.WindowStyle = 'modal';      % Modal mode
-end
+% % Handle optional figure input
+% if nargin < 2
+%     fig = uifigure('Name', 'Video Import Tool', 'Color', [1 1 1]);
+%     fig.Position(3:4) = [400 100];  % Width and height
+%     fig.WindowStyle = 'modal';      % Modal mode
+% end
 
 % Create VideoReader object
 video_object = VideoReader(path);
 
 % Progress dialog
-d = uiprogressdlg(fig, 'Title', 'Please Wait', 'Message', ['Loading video : ', video_object.Name]);
+% d = uiprogressdlg(fig, 'Title', 'Please Wait', 'Message', ['Loading video : ', video_object.Name]);
 
 % Number of frames
 numFrames = video_object.NumFrames;
@@ -45,15 +45,15 @@ frames = cell(1, numFrames);  % Initialize the cell array for storing frames
 % Read video frames
 for current_frame = 1:numFrames
     frames{current_frame} = read(video_object, current_frame);
-    d.Value = current_frame / numFrames;  % Update progress bar
+%     d.Value = current_frame / numFrames;  % Update progress bar
 end
 
 % Update progress dialog message
-d.Message = 'Finishing';
+% d.Message = 'Finishing';
 pause(0.3);
 
 % Close the figure if it was created within the function
-if nargin < 2
-    close(fig);
-end
+% if nargin < 2
+%     close(fig);
+% end
 end

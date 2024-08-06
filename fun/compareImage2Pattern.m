@@ -21,8 +21,8 @@ else
 end
 
 % compare 
-for col = 1+lengthBorderwidth : size(Img,2)
-    for row = 1+lengthBorderHeigth : size(Img,1)
+for col = 1+lengthBorderwidth : size(Img,2)-lengthBorderwidth 
+    for row = 1+lengthBorderHeigth : size(Img,1)-lengthBorderHeigth
         temp = corpImageAsRectangle(Img,col,row,heigthBox,widthBox);
         if ~isnan(temp)
             errMatrix(row,col) = comparaisonImage(temp,patternImage);

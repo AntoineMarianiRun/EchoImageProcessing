@@ -23,6 +23,6 @@ plot(time, void, 'k*', 'LineWidth', 2); % Plot value data
 xlabel('Time (s)','FontWeight','bold');
 ylabel('Void (%)','FontWeight','bold');
 xlim([0 max(time)])
-ylim([0 max(void)*1.2])
+ylim([0 (max(void)*1.2)+0.1])
 grid on;
 end
