@@ -13,12 +13,12 @@ if mod(length(heigthBox),2)~=1 && mod(length(widthBox),2)~=1
 end
 
     % intitialize 
-row = [currentTemplateRow,nan(1,nbFrames-1)];
-col = [currentTemplateCol,nan(1,nbFrames-1)];
-minValue = [0,nan(1,nbFrames-1)];
+row = nan(1,nbFrames);
+col = nan(1,nbFrames);
+minValue = nan(1,nbFrames);
 
-figure
-for currentFrame = 2 : nbFrames
+
+for currentFrame = 1 : nbFrames
     currentImage = frames{currentFrame};
     currentZoneOfInterest = corpImageAsRectangle(currentImage, ...         % curent image to analyse 
         currentTemplateCol, ...                                           % previous position 
@@ -52,9 +52,9 @@ for currentFrame = 2 : nbFrames
            nTemplateRow, ...
            nTemplateCol);
     
-       plotErrorMartixAndImage(errMatrix,currentZoneOfInterest)
-       pause(.1)
-
+%        plotErrorMartixAndImage(errMatrix,currentZoneOfInterest)
+%        pause(.2)
+%        close(gcf)
     end
     compt = compt + 1;
     

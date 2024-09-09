@@ -1,4 +1,4 @@
-function [frames, video_object] = loadVideo(path, fig)
+function [frames, video_object] = loadVideo(videoPath, fig)
 % load_video Load video frames from a specified path.
 %   [frames, video_object] = load_video(path) loads the video specified by
 %   the given path and returns the frames in a cell array and the VideoReader
@@ -15,10 +15,10 @@ function [frames, video_object] = loadVideo(path, fig)
 %   - video_object: VideoReader object with video properties.
 
 % Input verification
-if ischar(path)
-    path = string(path);
-elseif isstring(path)
-    if numel(path) ~= 1
+if ischar(videoPath)
+    videoPath = string(videoPath);
+elseif isstring(videoPath)
+    if numel(videoPath) ~= 1
         error('Input must be a single path.');
     end
 else
@@ -26,17 +26,17 @@ else
 end
 
 % % Handle optional figure input
-% if nargin < 2
-%     fig = uifigure('Name', 'Video Import Tool', 'Color', [1 1 1]);
-%     fig.Position(3:4) = [400 100];  % Width and height
-%     fig.WindowStyle = 'modal';      % Modal mode
-% end
+if nargin < 2
+    fig = uifigure('Name', 'Video Import Tool', 'Color', [1 1 1]);
+    fig.Position(3:4) = [400 100];  % Width and height
+    fig.WindowStyle = 'modal';      % Modal mode
+end
 
 % Create VideoReader object
-video_object = VideoReader(path);
+video_object = VideoReader(videoPath);
 
 % Progress dialog
-% d = uiprogressdlg(fig, 'Title', 'Please Wait', 'Message', ['Loading video : ', video_object.Name]);
+d = uiprogressdlg(fig, 'Title', 'Please Wait', 'Message', ['Loading video : ', video_object.Name]);
 
 % Number of frames
 numFrames = video_object.NumFrames;
@@ -45,7 +45,7 @@ frames = cell(1, numFrames);  % Initialize the cell array for storing frames
 % Read video frames
 for current_frame = 1:numFrames
     frames{current_frame} = read(video_object, current_frame);
-%     d.Value = current_frame / numFrames;  % Update progress bar
+    d.Value = current_frame / numFrames;  % Update progress bar
 end
 
 % Update progress dialog message
@@ -53,7 +53,7 @@ end
 pause(0.3);
 
 % Close the figure if it was created within the function
-% if nargin < 2
-%     close(fig);
-% end
+if nargin < 2
+    close(fig);
+end
 end
