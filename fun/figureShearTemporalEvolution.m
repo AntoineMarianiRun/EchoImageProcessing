@@ -15,7 +15,7 @@ ylabel('Shear modulus (kPa)','FontWeight','bold');
 title('Temporal Evolution of Shear modulus');
 legend('Mean  +/- Std');
 xlim([0 max(time)])
-ylim([0 max(mean_SWE + 1.5 * std_SWE)])
+ylim([0 max(mean_SWE + 1.5 * std_SWE)+0.1])
 
 % Second subplot: Value
 subplot(3,1,3);

@@ -8,8 +8,8 @@ videoIndex = 1; % first video import
 frameIndex = 1; % first frame to set the shape 
 
 %% read the video
-videoRead(video(videoIndex).frame,video(videoIndex).videoObject)           % read the video 
-frameRead(video(videoIndex).frame,frameIndex)                              % show a sigle frame
+% videoRead(video(videoIndex).frame,video(videoIndex).videoObject)           % read the video 
+% frameRead(video(videoIndex).frame,frameIndex)                              % show a sigle frame
 
 %% show colorscale 
 ShowColorScale(video(videoIndex).colorScale.colorScaleRGBuint8, ...
@@ -34,8 +34,8 @@ results = colorCalculation(video(videoIndex).frame,...                     % fra
 figureShearTemporalEvolution(results)
 
 % interestion value of an image
-sweFrameIndex = 6;
-figureFrameColorHistogram(video,videoIndex,sweFrameIndex,results)
+% sweFrameIndex = 6;
+% figureFrameColorHistogram(video,videoIndex,sweFrameIndex,results)
 
 %% save 
 currentForder = cd;                                                        % current forlder 
