@@ -1,4 +1,31 @@
-function [row,col,minValue] = tracking(frames,template,currentTemplateRow,currentTemplateCol,nPixRow,nPixCol,rateOfChange)
+function [row,col,minValue] = tracking(frames,template,currentTemplateRow,currentTemplateCol,nPixRow,nPixCol,rateOfChange,opts)
+% defoaut options
+defaultOpts.showHeatMap = "off";
+defaultOpts.showTemplate = "off";
+defaultOpts.progressBar = "off";
+
+
+% check option 
+if nargin > 7
+    % do nothing
+else
+    opts = struct();  % Si aucune option n'est fournie
+end
+% option select 
+opts = mergeOptions(defaultOpts, opts);
+
+% progress bar
+if opts.progressBar == "on"
+    fig = uifigure('Name', 'Progress');
+    fig.Color =  [1 1 1];
+    fig.Position(3:4) =  [400 110]; %  w h
+    fig.WindowStyle ="modal";
+    d = uiprogressdlg(fig, 'Title', 'Please Wait', 'Message', 'Tracking progress');
+end
+
+
+
+
 compt = 1;
 nbFrames = numel(frames);
 method = "Crop";
@@ -21,8 +48,8 @@ minValue = nan(1,nbFrames);
 for currentFrame = 1 : nbFrames
     currentImage = frames{currentFrame};
     currentZoneOfInterest = corpImageAsRectangle(currentImage, ...         % curent image to analyse 
-        currentTemplateCol, ...                                           % previous position 
-        currentTemplateRow, ...                                           % previous position 
+        currentTemplateCol, ...                                            % previous position 
+        currentTemplateRow, ...                                            % previous position 
         heigthBox,widthBox);                                               % zone of intest size
 
     errMatrix = compareImage2Pattern(currentZoneOfInterest,template,method);        % pattern matching 
@@ -40,7 +67,7 @@ for currentFrame = 1 : nbFrames
     end
 
 
-
+    % change 
     if compt == rateOfChange
        compt = 0;
        currentTemplateRow = row(currentFrame);
@@ -51,12 +78,44 @@ for currentFrame = 1 : nbFrames
            currentTemplateRow, ...
            nTemplateRow, ...
            nTemplateCol);
-    
-%        plotErrorMartixAndImage(errMatrix,currentZoneOfInterest)
-%        pause(.2)
-%        close(gcf)
+
+       % options
+       if opts.showHeatMap == "on"
+           plotErrorMartixAndImage(errMatrix,currentZoneOfInterest)
+           title(['heat map frame : ', num2str(currentFrame)])
+       end
+
+       if opts.showTemplate == "on"
+           figure('Name','template update', 'color',[1 1 1])
+           image(template)
+           title(['template frame : ', num2str(currentFrame)])
+       end
     end
     compt = compt + 1;
-    
+    if opts.progressBar == "on" && mod(currentFrame,10)==1
+        d.Value = currentFrame / nbFrames;  % Update progress bar
+        pause(0.1)
+    end
 end
+
+
+if opts.progressBar == "on"
+    fig.WindowStyle ="normal";
+    close(fig)
+end
+
+end
+
+
+
+function opts = mergeOptions(defaultOpts, userOpts)
+    opts = defaultOpts;
+    fields = fieldnames(userOpts);
+    for i = 1:length(fields)
+        if isfield(defaultOpts, fields{i})
+            opts.(fields{i}) = userOpts.(fields{i});
+        else
+            warning(['Option ', fields{i}, ' unknown.']);
+        end
+    end
 end

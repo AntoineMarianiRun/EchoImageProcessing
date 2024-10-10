@@ -1,64 +1,233 @@
-video =  uiGetVideo(); 
-selected_frame = video.frame{1};
-
-% selected_frame = imread('C:\Users\Stage\Desktop\csm_ATELIERS_LE_TAMPON-30_6ee3587386.jpg');
-%% 
-heigthBox = 57;
-widthBox = 27;
-[X,Y,templateImage] = setImageTemplate(selected_frame,heigthBox,widthBox);
-% [X3,Y3,patternImage3] = setImagePattern(selected_frame,200);
-
-figure('Name','Pattern','Color',[1 1 1])
-image(templateImage)
-%%
-frames = video.frame;
-tempate = templateImage;
-row = Y;
-col = X;
-nPixCol = 30;
-nPixRow = 20;
-rateOfChange = 10;
-
-tic
-[row,col,minValue] = tracking(frames,tempate,row,col,nPixRow,nPixCol,rateOfChange);
-toc
-%%
-
-heigthBox = 501;
-widthBox = 501;
-
-Image_ = corpImageAsRectangle(selected_frame,X,Y,heigthBox,widthBox);
+                        %% Template matching correlation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% figure('Name','Image','Color',[1 1 1])
-% image(selected_frame)
+%% select echo video
+video =  uiGetVideo();                                                     % get video and video information
+videoIndex = 1;                                                            % first video selected 
+selected_frame = video(videoIndex).frame{1};                               % first frame of the video 
 
+%% set a template
+heigthBox = 57;                                                            % heigth of the template 
+widthBox = 27;                                                             % width of the template 
+[X,Y,templateImage] = setImageTemplate(selected_frame,heigthBox,widthBox); % set the template 
 
-figure('Name','Pattern','Color',[1 1 1])
-image(patternImage)
+figure('Name','Pattern','Color',[1 1 1])                                   % figure for the tempate 
+image(templateImage)                                                       % show the tempate 
+hold on
+plot(widthBox/2,heigthBox/2, 'sr')                                         % center of the template
 
-figure('Name','Image','Color',[1 1 1])
-image(Image_)
+%% template matching correlation on an image 
+heigthImage = 501;
+widthImage = 501;
 
+Image_ = corpImageAsRectangle(selected_frame,X,Y,heigthImage,widthImage);  % image that you want to search on 
 
-%% compare image with same size 
-% [X2,Y2,patternImage2] = setImagePattern(selected_frame,51);
-% [absError] =  comparaisonImage(patternImage2,patternImage);
+method = "Crop";                                                           % method for image border 
+[errMatrix] = compareImage2Pattern(Image_,templateImage,method);           % template matching correlation 
 
+[rowOffset,colOffset,minValue] = minError(errMatrix);                      % position and error 
 
-%% pattern fitting 
-method = "Crop";
-[errMatrix] = compareImage2Pattern(Image_,patternImage,method);
-% [errMatrix] = compareImage2Pattern(selected_frame,patternImage,method);
-[rowOffset,colOffset,minValue] = minError(errMatrix);
-
-%% illustration 
+% illustration 
 plotErrorMartixAndImage(errMatrix,Image_)
-% plotErrorMartixAndImage(errMatrix,patternImage3)
-
-% plotHeatMapErrorMatrix(errMatrix)
-% 
-% plot3DErrorMatrix(errMatrix)
+plotHeatMapErrorMatrix(errMatrix)
+plot3DErrorMatrix(errMatrix)
 
 
-% plotErrorMartixAndImage(errMatrix,selected_frame)
+%% tracking process (template matching correlation on a video) 
+frames = video(videoIndex).frame;                                          % images on which we perform the tracking
+tempate = templateImage;                                                   % our template we search
+row = Y;                                                                   % first position of the template 
+col = X;                                                                   % first position of the template 
+nPixCol = 30;                                                              % possible deplacement beatween each frame 
+nPixRow = 20;                                                              % possible deplacement beatween each frame 
+rateOfChange = 10;                                                         % Rate update of the template in number of frame (deformation of the medium) 
+
+% options tracking 
+opts.showHeatMap = "on";
+opts.showTemplate = "off";
+opts.progressBar = "on";
+
+
+[row,col,minValue] = tracking(frames, ...
+    tempate, ...
+    row, ...
+    col, ...
+    nPixRow, ...
+    nPixCol, ...
+    rateOfChange, ...
+    opts);                                                                 % tracking process
+
+
+%% Muscle architecture 
+opts.showHeatMap = "off";
+opts.showTemplate = "off";
+opts.progressBar = "on";
+
+
+% deep apponevroses
+deepApponevroses_1.X = 980;
+deepApponevroses_1.Y = 594;
+deepApponevroses_1.template = corpImageAsRectangle(selected_frame, ...
+    deepApponevroses_1.X, ...
+    deepApponevroses_1.Y, ...
+    nPixRow, ...
+    nPixCol);
+
+deepApponevroses_2.X = 636;
+deepApponevroses_2.Y = 659;
+deepApponevroses_2.template = corpImageAsRectangle(selected_frame, ...
+    deepApponevroses_2.X, ...
+    deepApponevroses_2.Y, ...
+    nPixRow, ...
+    nPixCol);
+
+
+surfaceApponevroses_1.X = 475;
+surfaceApponevroses_1.Y = 285;
+surfaceApponevroses_1.template = corpImageAsRectangle(selected_frame, ...
+    surfaceApponevroses_1.X, ...
+    surfaceApponevroses_1.Y, ...
+    nPixRow, ...
+    nPixCol);
+
+surfaceApponevroses_2.X = 908;
+surfaceApponevroses_2.Y = 270;
+surfaceApponevroses_2.template = corpImageAsRectangle(selected_frame, ...
+    surfaceApponevroses_2.X, ...
+    surfaceApponevroses_2.Y, ...
+    nPixRow, ...
+    nPixCol);
+
+
+muscleFibers_1.X = 551;
+muscleFibers_1.Y = 390;
+muscleFibers_1.template = corpImageAsRectangle(selected_frame, ...
+    muscleFibers_1.X, ...
+    muscleFibers_1.Y, ...
+    50, ...
+    50);
+
+muscleFibers_2.X = 851;
+muscleFibers_2.Y = 453;
+muscleFibers_2.template = corpImageAsRectangle(selected_frame, ...
+    muscleFibers_2.X, ...
+    muscleFibers_2.Y, ...
+    50, ...
+    50);
+
+figure("Name","marker set","Color",[1 1 1])
+image(selected_frame)
+hold on 
+
+plot(deepApponevroses_1.X,deepApponevroses_1.Y,'+g')
+plot(deepApponevroses_2.X,deepApponevroses_2.Y,'+g')
+
+plot(surfaceApponevroses_1.X,surfaceApponevroses_1.Y,'+y')
+plot(surfaceApponevroses_2.X,surfaceApponevroses_2.Y,'+y')
+
+plot(muscleFibers_1.X,muscleFibers_1.Y,'+r')
+plot(muscleFibers_2.X,muscleFibers_2.Y,'+r')
+
+
+%%
+opts.showHeatMap = "on";
+opts.showTemplate = "off";
+opts.progressBar = "on";
+
+
+
+[deepApponevroses_1.row,deepApponevroses_1.col,deepApponevroses_1.minValue] = tracking(frames, ...
+    deepApponevroses_1.template, ...
+    deepApponevroses_1.Y, ...
+    deepApponevroses_1.X, ...
+    51, ...
+    1, ...
+    25, ...
+    opts);
+
+[deepApponevroses_2.row,deepApponevroses_2.col,deepApponevroses_2.minValue] = tracking(frames, ...
+    deepApponevroses_2.template, ...
+    deepApponevroses_2.Y, ...
+    deepApponevroses_2.X, ...
+    51, ...
+    1, ...
+    25, ...
+    opts);
+
+[surfaceApponevroses_1.row,surfaceApponevroses_1.col,surfaceApponevroses_1.minValue] = tracking(frames, ...
+    surfaceApponevroses_1.template, ...
+    surfaceApponevroses_1.Y, ...
+    surfaceApponevroses_1.X, ...
+    51, ...
+    1, ...
+    25, ...
+    opts);
+
+[surfaceApponevroses_2.row,surfaceApponevroses_2.col,surfaceApponevroses_2.minValue] = tracking(frames, ...
+    surfaceApponevroses_2.template, ...
+    surfaceApponevroses_2.Y, ...
+    surfaceApponevroses_2.X, ...
+    51, ...
+    1, ...
+    25, ...
+    opts);
+
+[muscleFibers_1.row,muscleFibers_1.col,muscleFibers_1.minValue] = tracking(frames, ...
+    muscleFibers_1.template, ...
+    muscleFibers_1.Y, ...
+    muscleFibers_1.X, ...
+    51, ...
+    51, ...
+    25, ...
+    opts);
+
+[muscleFibers_2.row,muscleFibers_2.col,muscleFibers_2.minValue] = tracking(frames, ...
+    muscleFibers_2.template, ...
+    muscleFibers_2.Y, ...
+    muscleFibers_2.X, ...
+    51, ...
+    51, ...
+    25, ...
+    opts);
+
+
+%%  show 
+
+mkrTracked(1).row=deepApponevroses_1.row;
+mkrTracked(1).col=deepApponevroses_1.col;
+mkrTracked(1).color='w';
+mkrTracked(1).marker='+';
+mkrTracked(1).markerSize=6;
+
+mkrTracked(2).row=deepApponevroses_2.row;
+mkrTracked(2).col=deepApponevroses_2.col;
+mkrTracked(2).color='w';
+mkrTracked(2).marker='+';
+mkrTracked(2).markerSize=6;
+
+mkrTracked(3).row=surfaceApponevroses_1.row;
+mkrTracked(3).col=surfaceApponevroses_1.col;
+mkrTracked(3).color='w';
+mkrTracked(3).marker='+';
+mkrTracked(3).markerSize=6;
+
+mkrTracked(4).row=surfaceApponevroses_2.row;
+mkrTracked(4).col=surfaceApponevroses_2.col;
+mkrTracked(4).color='w';
+mkrTracked(4).marker='+';
+mkrTracked(4).markerSize=6;
+
+mkrTracked(5).row=muscleFibers_1.row;
+mkrTracked(5).col=muscleFibers_1.col;
+mkrTracked(5).color='r';
+mkrTracked(5).marker='+';
+mkrTracked(5).markerSize=6;
+
+mkrTracked(6).row=muscleFibers_2.row;
+mkrTracked(6).col=muscleFibers_2.col;
+mkrTracked(6).color='r';
+mkrTracked(6).marker='+';
+mkrTracked(6).markerSize=6;
+
+videoTrackingRead(frames, video.videoObject,mkrTracked)
