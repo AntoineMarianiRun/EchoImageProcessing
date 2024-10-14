@@ -35,47 +35,65 @@ nTemplateCol = size(template,2);
 heigthBox = 2*nPixRow + nTemplateRow;
 widthBox = 2*nPixCol + nTemplateCol;
 
-if mod(length(heigthBox),2)~=1 && mod(length(widthBox),2)~=1
-    error('error in function tracking')
+if mod(nTemplateRow,2)~=1 && mod(nTemplateCol,2)~=1
+    error('error in function tracking template size must have a odd heigth and odd width')
 end
 
     % intitialize 
 row = nan(1,nbFrames);
 col = nan(1,nbFrames);
 minValue = nan(1,nbFrames);
-
+col(1) = currentTemplateCol;
+row(1) = currentTemplateRow;
 
 for currentFrame = 1 : nbFrames
     currentImage = frames{currentFrame};
-    currentZoneOfInterest = corpImageAsRectangle(currentImage, ...         % curent image to analyse 
-        currentTemplateCol, ...                                            % previous position 
-        currentTemplateRow, ...                                            % previous position 
-        heigthBox,widthBox);                                               % zone of intest size
 
-    errMatrix = compareImage2Pattern(currentZoneOfInterest,template,method);        % pattern matching 
-    [currentError,rowOffset,colOffset] = minError(errMatrix);    
-    
-    
-    if ~isnan(currentError)
-        minValue(currentFrame) = currentError;
-        col(currentFrame) = currentTemplateCol + colOffset;
-        row(currentFrame) = currentTemplateRow + rowOffset;
+    if currentFrame == 1
+        currentZoneOfInterest = corpImageAsRectangle(currentImage, ...         % curent image to analyse
+            currentTemplateCol, ...                                            % previous position
+            currentTemplateRow, ...                                             % previous position
+            heigthBox,widthBox);                                               % zone of intest size
     else
-        minValue(currentFrame) = 1;
-        col(currentFrame) = col(currentFrame-1);
-        row(currentFrame) = row(currentFrame-1);
+        currentZoneOfInterest = corpImageAsRectangle(currentImage, ...         % curent image to analyse
+            col(currentFrame-1) , ...                                            % previous position
+            row(currentFrame-1), ...                                             % previous position
+            heigthBox,widthBox);                                               % zone of intest size
     end
+    errMatrix = compareImage2Pattern(currentZoneOfInterest,template,method);        % pattern matching 
+    [currentError,rowOffset,colOffset] = minError(errMatrix);  
+
+    if currentFrame == 1
+        if ~isnan(currentError)
+            minValue(currentFrame) = currentError;
+            col(currentFrame) = col(currentFrame) + colOffset;
+            row(currentFrame) = row(currentFrame) + rowOffset;
+        else
+            minValue(currentFrame) = 1;
+            col(currentFrame) = col(currentFrame);
+            row(currentFrame) = row(currentFrame);
+        end
+    else
+        if ~isnan(currentError)
+            minValue(currentFrame) = currentError;
+            col(currentFrame) = col(currentFrame-1) + colOffset;
+            row(currentFrame) = row(currentFrame-1) + rowOffset;
+        else
+            minValue(currentFrame) = 1;
+            col(currentFrame) = col(currentFrame-1);
+            row(currentFrame) = row(currentFrame-1);
+        end                                       % zone of intest size
+    end
+
 
 
     % change 
     if compt == rateOfChange
        compt = 0;
-       currentTemplateRow = row(currentFrame);
-       currentTemplateCol = col(currentFrame);
        
        template = corpImageAsRectangle(currentImage, ...
-           currentTemplateCol, ...
-           currentTemplateRow, ...
+           col(currentFrame), ...
+           row(currentFrame), ...
            nTemplateRow, ...
            nTemplateCol);
 
@@ -86,8 +104,7 @@ for currentFrame = 1 : nbFrames
        end
 
        if opts.showTemplate == "on"
-           figure('Name','template update', 'color',[1 1 1])
-           image(template)
+           showTemplate(template)
            title(['template frame : ', num2str(currentFrame)])
        end
     end
