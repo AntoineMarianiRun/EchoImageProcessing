@@ -261,8 +261,8 @@ classdef App_Echo < matlab.apps.AppBase
 
         %% Set_Axes (ok)
         function Set_Axes(app)
-            image(app.component.Axes,app.video(app.variables.videoindex).(app.variables.framebox){app.variables.frameindex})
-            [h , w , ~] = size(app.video(app.variables.videoindex).(app.variables.framebox){app.variables.frameindex});
+            image(app.component.Axes,app.video(app.variables.videoindex).frame{app.variables.frameindex})
+            [h , w , ~] = size(app.video(app.variables.videoindex).frame{app.variables.frameindex});
             app.component.Axes.XLim = [0 w];
             app.component.Axes.YLim = [0 h];
         end
@@ -303,7 +303,7 @@ classdef App_Echo < matlab.apps.AppBase
         %% PlayButton (ok)
         function PlayButton(app,~)
             for i = app.variables.frameindex : 2 : app.video(app.variables.videoindex).videoObject.NumFrames
-                image(app.component.Axes,app.video(app.variables.videoindex).(app.variables.framebox){i});
+                image(app.component.Axes,app.video(app.variables.videoindex).frame{i});
                 app.component.Slider.Value = (i / app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
                 pause(1/app.video(app.variables.videoindex).videoObject.FrameRate)
                 app.variables.frameindex = app.variables.frameindex+1;
@@ -322,7 +322,7 @@ classdef App_Echo < matlab.apps.AppBase
             else
                 app.variables.frameindex = app.variables.frameindex +1 ;
             end
-            image(app.component.Axes,app.video(app.variables.videoindex).(app.variables.framebox){app.variables.frameindex});
+            image(app.component.Axes,app.video(app.variables.videoindex).frame{app.variables.frameindex});
             app.component.Slider.Value = (app.variables.frameindex/ app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
         end
 
@@ -335,7 +335,7 @@ classdef App_Echo < matlab.apps.AppBase
             else
                 app.variables.frameindex = app.variables.frameindex - 1 ;
             end
-            image(app.component.Axes,app.video(app.variables.videoindex).(app.variables.framebox){app.variables.frameindex});
+            image(app.component.Axes,app.video(app.variables.videoindex).frame{app.variables.frameindex});
             app.component.Slider.Value = (app.variables.frameindex/ app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
         end
 
@@ -554,11 +554,11 @@ classdef App_Echo < matlab.apps.AppBase
         %% SWEillustration
         function SWEillustration(app,event)
             try
-                isempty(app.video(app.variables.videoindex).memory_SWE) % SWE?
+                isempty(app.video(app.variables.videoindex).memory_SWE); % SWE?
                 % action Set frame rate
 
                 if string(event.Source.Text)  == "Histogram"
-                    app.general.fun.UIColorHistogram(app.video,...
+                    app.general.fun.uiColorHistogram(app.video,...
                         app.variables.videoindex,...
                         app.video(app.variables.videoindex).memory_SWE)
                 elseif string(event.Source.Text)  == "Temporal evolution"
