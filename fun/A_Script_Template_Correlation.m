@@ -68,6 +68,9 @@ exTracked(1).markerSize=6;
 
 videoTrackingRead(frames, video.videoObject,exTracked)                     % show the tracking 
 
+%% test ui interface tracking 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[row_,col_] = uiTracking(video(videoIndex).frame);
 
 %% 3/  Muscle architecture exemple
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -326,3 +329,7 @@ figure
 plot(video(videoIndex).time.Bmode,fiberLength)
 xlabel('Time (s)')
 ylabel('Fiber length (cm)')
+
+
+
+
