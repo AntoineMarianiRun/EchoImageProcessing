@@ -49,26 +49,7 @@ classdef App_Echo < matlab.apps.AppBase
                 % Tracking tools                
                 app.component.TrackinPointgmenu = uimenu(app.component.Bmodemenu);
                 app.component.TrackinPointgmenu.Text = 'Tracking point';
-                    % Y-tracking
-                    app.component.Ytrackingmenu = uimenu(app.component.TrackinPointgmenu);
-                    app.component.Ytrackingmenu.Text = 'Y-Tracking';
-                    app.component.Ytrackingmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
-                    % X-tracking
-                    app.component.Xtrackingmenu =  uimenu(app.component.TrackinPointgmenu);
-                    app.component.Xtrackingmenu.Text = 'X-Tracking';
-                    app.component.Xtrackingmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
-                    % XY-tracking
-                    app.component.XYtrackingmenu = uimenu(app.component.TrackinPointgmenu);
-                    app.component.XYtrackingmenu.Text = 'XY-Tracking';
-                    app.component.XYtrackingmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
-                    % Manual
-                    app.component.Manualmenu = uimenu(app.component.TrackinPointgmenu);
-                    app.component.Manualmenu.Text = 'Manual';
-                    app.component.Manualmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
-                    % Immovable
-                    app.component.Immovablemenu = uimenu(app.component.TrackinPointgmenu);
-                    app.component.Immovablemenu.Text = 'Immovable';
-                    app.component.Immovablemenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+                app.component.TrackinPointgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
 
             % Pipline 
             app.component.Piplinemenu = uimenu(app.component.Bmodemenu);
@@ -302,15 +283,16 @@ classdef App_Echo < matlab.apps.AppBase
 
         %% PlayButton (ok)
         function PlayButton(app,~)
+            displayFrame(app)
             for i = app.variables.frameindex : 2 : app.video(app.variables.videoindex).videoObject.NumFrames
-                image(app.component.Axes,app.video(app.variables.videoindex).frame{i});
+                displayFrame(app)
                 app.component.Slider.Value = (i / app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
                 pause(1/app.video(app.variables.videoindex).videoObject.FrameRate)
                 app.variables.frameindex = app.variables.frameindex+1;
             end
             app.variables.frameindex =1;
             app.component.Slider.Value = 0 ;
-            Set_Axes(app);
+            displayFrame(app)
         end
 
         %% ForwardButton (ok)
@@ -322,7 +304,7 @@ classdef App_Echo < matlab.apps.AppBase
             else
                 app.variables.frameindex = app.variables.frameindex +1 ;
             end
-            image(app.component.Axes,app.video(app.variables.videoindex).frame{app.variables.frameindex});
+            displayFrame(app)
             app.component.Slider.Value = (app.variables.frameindex/ app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
         end
 
@@ -335,10 +317,35 @@ classdef App_Echo < matlab.apps.AppBase
             else
                 app.variables.frameindex = app.variables.frameindex - 1 ;
             end
-            image(app.component.Axes,app.video(app.variables.videoindex).frame{app.variables.frameindex});
+            displayFrame(app)
             app.component.Slider.Value = (app.variables.frameindex/ app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
         end
 
+        function displayFrame(app)
+            currentFrame = app.variables.frameindex;
+            cla(app.component.Axes)
+            image(app.component.Axes,app.video(app.variables.videoindex).frame{currentFrame});
+            hold(app.component.Axes,'on')
+           
+
+            if ~isempty(app.video(app.variables.videoindex).memory_tracking)
+                % tracking point 
+                try
+                    for ii = 1 : size(app.video(app.variables.videoindex).memory_tracking.mkrTracked,2)
+                        plot(app.component.Axes, ...
+                            app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).col(currentFrame), ...
+                            app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).row(currentFrame), ...
+                            'Color',app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).color, ...
+                            'Marker',app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).marker,...
+                            'MarkerSize',app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).markerSize)
+                    end
+                catch
+                end
+
+                % linear function 
+
+            end
+        end
         %% VideoChange (OK)
         function VideoChange(app,event)
             app.variables.videoindex = find(string(event.Value) == string(app.component.Vlist.Items)) ;
@@ -431,61 +438,18 @@ classdef App_Echo < matlab.apps.AppBase
         end
 
         %% Tracking_point (ok)
-        function Tracking_point(app,event)
+        function Tracking_point(app,~)
             %% point name
             nbmkr = length(app.video(app.variables.videoindex).memory_tracking) ;
-            [mkrname] = SetMkrName(nbmkr+1) ;
+            nbmkr = nbmkr+1;
+            [row_,col_] = app.general.fun.uiTracking(app.video(app.variables.videoindex).frame);
 
-            %% method
-            if string(event.Source.Text)  == "XY-Tracking"
-                TrkPoint = app.general.fun.tracking_xy(app.video(app.variables.videoindex),1,30) ;
-            elseif string(event.Source.Text)  == "X-Tracking"
-                TrkPoint = app.general.fun.tracking_x(app.video(app.variables.videoindex),1,30) ;
-            elseif string(event.Source.Text)  == "Y-Tracking"
-                TrkPoint = app.general.fun.tracking_y(app.video(app.variables.videoindex),1,30) ;
-            elseif string(event.Source.Text)  == "Manual"
-                disp('manual tracking not done yet')
-            elseif string(event.Source.Text)  == "Immovable"
-                disp('manual tracking not done yet')
-                %TrkPoint = app.general.fun.immovable(app.video(app.variables.videoindex),1,30) ;
-            end
-            %% memory_tracking setup
-            app.video(app.variables.videoindex).memory_tracking.(mkrname).x  = TrkPoint.position(:,1) ;
-            app.video(app.variables.videoindex).memory_tracking.(mkrname).y  = TrkPoint.position(:,2) ;
-
-            %% function to name the mkr
-            function [mkrname] = SetMkrName(nbmkr)
-                mkrname = string(['mkr ', num2str(nbmkr)]) ;
-                fig = uifigure();
-                fig.Position(3:4) = [220 150];
-                fig.Color = [1 1 1];
-
-                % mkrnamelabel
-                mkrnamelabel = uilabel(fig);
-                mkrnamelabel.HorizontalAlignment = 'right';
-                mkrnamelabel.Position = [0 100 100 20];
-                mkrnamelabel.Text = 'Marker name : ';
-                % mkrnamevalue
-                mkrnamevalue = uieditfield(fig,'text');
-                mkrnamevalue.Position = [100 100 100 20];
-                mkrnamevalue.Value = mkrname ;
-
-                % ContinueButton
-                ContinueButton = uibutton(fig, 'push');
-                ContinueButton.Position = [50 40 130 25];
-                ContinueButton.Text = 'Ok';
-                ContinueButton.BackgroundColor=[.99 .99 .99];
-                ContinueButton.ButtonPushedFcn =  @(btn,event) ButtonPushed(btn,mkrnamevalue);
-
-                uiwait(fig);
-                close (fig)
-                %% button pushed function
-                function ButtonPushed(~,mkrnamevalue)
-                    mkrname = char(mkrnamevalue.Value) ;
-                    mkrname(mkrname == ' ') = '_' ;  mkrname = string(mkrname);
-                    uiresume(fig);
-                end
-            end
+            %% add to memory
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8;
         end
 
         %% function Pipline
