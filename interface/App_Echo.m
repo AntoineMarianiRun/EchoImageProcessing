@@ -279,6 +279,8 @@ classdef App_Echo < matlab.apps.AppBase
         function ImageClicked(~,~)
             url = 'https://irisse.univ-reunion.fr/';
             web(url);
+            url2 ='https://www.researchgate.net/profile/Antoine-Mariani';
+            web(url2);
         end
 
         %% PlayButton (ok)
@@ -402,9 +404,15 @@ classdef App_Echo < matlab.apps.AppBase
             cd(app.general.path.General)
 
             for i= 1 : length(videoname)
-                saveName  = string([videoname{i}(1:end-4),'_SWE.mat']) ;
-                SWEMemory = app.video(i).memory_SWE;
-                save(saveName,"SWEMemory",'-mat')
+                saveName  = string([videoname{i}(1:end-4),'_results.mat']) ;
+                swe = []; tracking = [];
+                if ~isempty(app.video(i).memory_SWE)
+                    swe = app.video(i).memory_SWE;
+                end
+                if ~isempty(app.video(i).memory_tracking)
+                    tracking = app.video(i).memory_tracking;
+                end
+                save(saveName,"swe","tracking",'-mat')
             end
             cd(app.general.path.App)
         end
@@ -443,13 +451,16 @@ classdef App_Echo < matlab.apps.AppBase
             nbmkr = length(app.video(app.variables.videoindex).memory_tracking) ;
             nbmkr = nbmkr+1;
             [row_,col_] = app.general.fun.uiTracking(app.video(app.variables.videoindex).frame);
-
-            %% add to memory
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8;
+            if ~any(isnan(row_)) || ~any(isnan(col_))
+                %% add to memory
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).y=row_ .* app.video(app.variables.videoindex).coef.y;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).x=col_ .* app.video(app.variables.videoindex).coef.x;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8;
+            end
         end
 
         %% function Pipline
