@@ -236,16 +236,13 @@ classdef App_Echo < matlab.apps.AppBase
             Set_Axes(app)
             %% Slider
             Set_Slider(app)
-            %% Table
-%             Set_Table(app)
         end
 
         %% Set_Axes (ok)
         function Set_Axes(app)
-            image(app.component.Axes,app.video(app.variables.videoindex).frame{app.variables.frameindex})
-            [h , w , ~] = size(app.video(app.variables.videoindex).frame{app.variables.frameindex});
-            app.component.Axes.XLim = [0 w];
-            app.component.Axes.YLim = [0 h];
+            displayFrame(app)
+            app.component.Axes.XLim = [0 app.video(app.variables.videoindex).videoObject.Width];
+            app.component.Axes.YLim = [0 app.video(app.variables.videoindex).videoObject.Height];
         end
 
         %% Set_Slider (ok)
@@ -254,22 +251,6 @@ classdef App_Echo < matlab.apps.AppBase
             app.component.Slider.MinorTicks = 0 : 0.5 : app.video(app.variables.videoindex).videoObject.Duration;
             app.component.Slider.MajorTicks = 0  : app.video(app.variables.videoindex).videoObject.Duration : app.video(app.variables.videoindex).videoObject.Duration;
         end
-
-        %% Set_Table (ok) pas pour affichage resultats
-        function Set_Table(app)
-
-            if isempty(app.video(app.variables.videoindex).memory_tracking)
-
-                %do nothong
-                app.component.Table.ColumnName = {'frame','time (s)'};
-                %app.component.Table.Data = [app.video(app.variables.videoindex).vect_frame',app.video(app.variables.videoindex).vect_time'] ;
-
-            else
-                %                 for i = 1 : length(app.video(app.variables.videoindex).memory_tracking)
-                %                 end
-            end
-        end
-
     end
 
     %% Callbacks
@@ -322,7 +303,8 @@ classdef App_Echo < matlab.apps.AppBase
             displayFrame(app)
             app.component.Slider.Value = (app.variables.frameindex/ app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
         end
-
+ 
+        %% displayFrame (ok)
         function displayFrame(app)
             currentFrame = app.variables.frameindex;
             cla(app.component.Axes)
@@ -348,6 +330,7 @@ classdef App_Echo < matlab.apps.AppBase
 
             end
         end
+
         %% VideoChange (OK)
         function VideoChange(app,event)
             app.variables.videoindex = find(string(event.Value) == string(app.component.Vlist.Items)) ;
@@ -398,13 +381,12 @@ classdef App_Echo < matlab.apps.AppBase
 
         %% export (ok)
         function export(app,~)
-            videoname = string(app.video.name);
+            nVideo = size(app.video,2);             
             %% export for SWE 
             %%%%%%%%%%%%%%%%%%
             cd(app.general.path.General)
-
-            for i= 1 : length(videoname)
-                saveName  = string([videoname{i}(1:end-4),'_results.mat']) ;
+            for i= 1 : nVideo
+                saveName  = string([app.video(i).name(1:end-4),'_results.mat']) ;
                 swe = []; tracking = [];
                 if ~isempty(app.video(i).memory_SWE)
                     swe = app.video(i).memory_SWE;
@@ -511,16 +493,16 @@ classdef App_Echo < matlab.apps.AppBase
         %% SWE_Calculation
         function SWE_Calculation(app,~)
             try
-                results = app.general.fun.colorCalculation(app.video(app.variables.frameindex).frame, ...
-                    app.video(app.variables.frameindex).time.SWindex, ...
-                    app.video(app.variables.frameindex).colorScale.colorScaleRGBdouble, ...
-                    app.video(app.variables.frameindex).colorScale.colorScaleValue, ...
-                    app.video(app.variables.frameindex).coef, ...
-                    app.video(app.variables.frameindex).Shape,...
-                    app.video(app.variables.frameindex).time.Bmode);
+                results = app.general.fun.colorCalculation(app.video(app.variables.videoindex).frame, ...
+                    app.video(app.variables.videoindex).time.SWindex, ...
+                    app.video(app.variables.videoindex).colorScale.colorScaleRGBdouble, ...
+                    app.video(app.variables.videoindex).colorScale.colorScaleValue, ...
+                    app.video(app.variables.videoindex).coef, ...
+                    app.video(app.variables.videoindex).Shape,...
+                    app.video(app.variables.videoindex).time.Bmode);
 
-                results.time = app.video(app.variables.frameindex).time.Bmode;
-                app.video(app.variables.frameindex).memory_SWE = results;
+                results.time = app.video(app.variables.videoindex).time.Bmode;
+                app.video(app.variables.videoindex).memory_SWE = results;
             catch
                 errordlg('Video selected must contain SWE and shape must be set')
             end
