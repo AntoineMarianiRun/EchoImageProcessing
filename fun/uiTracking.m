@@ -1,8 +1,8 @@
 function [row_,col_] = uiTracking(frame)
     %% Global Variables Initialization
     %about tracking
-    heigthTemplate_ = 25;
-    widthTemplate_ = 25;
+    heigthTemplate_ = 75;
+    widthTemplate_ = 75;
     verticalDrift_ = 10;
     horizontalDrift_ = 10;
     rateOfChange  = 15;
@@ -118,7 +118,7 @@ function [row_,col_] = uiTracking(frame)
 
     ChangeRateSpinner = uispinner(LeftPanel);
     ChangeRateSpinner.Position = [100 130 110 22];
-    ChangeRateSpinner.Limits = [1 1000];
+    ChangeRateSpinner.Limits = [1 inf];
     ChangeRateSpinner.Step = 1;
     ChangeRateSpinner.Value = rateOfChange;
 
@@ -195,7 +195,13 @@ function [row_,col_] = uiTracking(frame)
         UIAxes.YLim = [1 r];        
         hold(UIAxes, 'on');
         if ~isnan(row_(frameIndex)) && ~isnan(col_(frameIndex))
-            plot(UIAxes, col_(frameIndex), row_(frameIndex), '+r', 'MarkerSize', 10, 'LineWidth', 2);
+            [pltImage] = drawBoxPattern(UIAxes,...
+                frameIndex, ...
+                col_(frameIndex), ...
+                row_(frameIndex), ...
+                double(HeigthSpinner.Value), ...
+                double(WidthSpinner.Value), ...
+                pltImage);
         end
         hold(UIAxes, 'off');
         pltImage.ButtonDownFcn = @(src, event) axesClickCallback(event);
@@ -266,6 +272,7 @@ function [row_,col_] = uiTracking(frame)
         if mod(double(WidthSpinner.Value),2) ~= 1
             WidthSpinner.Value = double(WidthSpinner.Value)+1;
         end
+        displayImage()
     end 
 
     % **update globale Function**
