@@ -1,5 +1,8 @@
 function [frameResults] = frameColorCalculation(img,colorScaleRGBdouble,colorScaleValue,coef,Shape)
 compt = 0;
+nPixCol_ = sum(sum(Shape)~=0);
+nPixRow_ = sum(sum(Shape,2)~=0);
+
 results = nan(1,sum(Shape,'all'));
 for row = 1 : size(Shape,1)
     for col = 1 : size(Shape,2)
@@ -19,5 +22,5 @@ frameResults.stdValue = std(results(~isnan(results)));             % standard de
 frameResults.voidPercent = (sum(isnan(results))/compt)*100;        % void
 frameResults.saturationPercent = (sum((results==max(colorScaleValue)))/compt)*100; % saturation
 frameResults.nbPixel = compt;                                      % number of pixel
-frameResults.ROIsize = compt *coef.x*coef.y;                                      % number of pixel
+frameResults.ROIsize = (nPixCol_ *coef.x)*(nPixRow_*coef.y);                                      % number of pixel
 end
