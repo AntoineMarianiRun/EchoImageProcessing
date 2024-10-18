@@ -105,10 +105,18 @@ classdef App_Echo < matlab.apps.AppBase
                     app.component.ShapeCustummenu = uimenu(app.component.SetUpShapemenu);
                     app.component.ShapeCustummenu.Text = 'Custum shape';
                     app.component.ShapeCustummenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
-                    % Set Up Custum
+                    % Set Up auto 1cm2
                     app.component.ShapeAutomenu = uimenu(app.component.SetUpShapemenu);
                     app.component.ShapeAutomenu.Text = 'Auto shape';
                     app.component.ShapeAutomenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+                    % Set Up 1cm2 square
+                    app.component.ShapeSquare1cm2menu = uimenu(app.component.SetUpShapemenu);
+                    app.component.ShapeSquare1cm2menu.Text = 'Square 1cm^2 shape';
+                    app.component.ShapeSquare1cm2menu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+                    % Set Up all
+                    app.component.ShapeAllmenu = uimenu(app.component.SetUpShapemenu);
+                    app.component.ShapeAllmenu.Text = 'All color map';
+                    app.component.ShapeAllmenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
 
                 % Calcualtion Pipline
                 app.component.SWECaluculationmenu = uimenu(app.component.SWEmenu);
@@ -416,6 +424,14 @@ classdef App_Echo < matlab.apps.AppBase
                      app.video(app.variables.videoindex).Shape = Shape;
                 elseif string(event.Source.Text)  == "Auto shape"
                     Shape = app.general.fun.autoShape(app.video(app.variables.videoindex).frame{1},app.video(app.variables.videoindex).coef);
+                    app.video(app.variables.videoindex).Shape = Shape;
+                    app.general.fun.displayShape(app.video(app.variables.videoindex).frame{1},Shape)
+                elseif string(event.Source.Text)  == "Square 1cm^2 shape"
+                    Shape = app.general.fun.setSquareShapeCm(app.video(app.variables.videoindex).frame{1},app.video(app.variables.videoindex).coef,1);
+                    app.video(app.variables.videoindex).Shape = Shape;
+                    app.general.fun.displayShape(app.video(app.variables.videoindex).frame{1},Shape)
+                elseif string(event.Source.Text)  == "All color map"
+                    Shape = app.general.fun.allShape(app.video(app.variables.videoindex).frame{1});
                     app.video(app.variables.videoindex).Shape = Shape;
                     app.general.fun.displayShape(app.video(app.variables.videoindex).frame{1},Shape)
                 end

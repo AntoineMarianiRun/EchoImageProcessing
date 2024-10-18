@@ -18,8 +18,14 @@ ShowColorScale(video(videoIndex).colorScale.colorScaleRGBuint8, ...
 %% set a shape (in the shape is the pixels selected to perform the color
 % comparaison)
 % Shape = setCustumShape(video(videoIndex).frame{frameIndex});             % custum
-% Shape = setSquareShape(video(videoIndex).frame{frameIndex});               % as a square 
-[Shape] = autoShape(video(videoIndex).frame{frameIndex},video(videoIndex).coef);
+% Shape = setSquareShape(video(videoIndex).frame{frameIndex});             % as a square 
+% Shape = allShape(video(videoIndex).frame{frameIndex});                   % select all 
+% Shape = setSquareShapeCm(video(videoIndex).frame{frameIndex}, ...
+%     video(videoIndex).coef, ...
+%     1);                                                                  % 1 cm square shape 
+
+[Shape] = autoShape(video(videoIndex).frame{frameIndex}, ...
+    video(videoIndex).coef);                                               % 1cm^2 on the middle of swe zone 
 %% compare each pixel contains in the shape (for each SWE image) to the
 results = colorCalculation(video(videoIndex).frame,...                     % frames 
     video(videoIndex).time.SWindex,...                                     % index of the swe images
