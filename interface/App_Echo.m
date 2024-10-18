@@ -105,6 +105,10 @@ classdef App_Echo < matlab.apps.AppBase
                     app.component.ShapeCustummenu = uimenu(app.component.SetUpShapemenu);
                     app.component.ShapeCustummenu.Text = 'Custum shape';
                     app.component.ShapeCustummenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+                    % Set Up Custum
+                    app.component.ShapeAutomenu = uimenu(app.component.SetUpShapemenu);
+                    app.component.ShapeAutomenu.Text = 'Auto shape';
+                    app.component.ShapeAutomenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
 
                 % Calcualtion Pipline
                 app.component.SWECaluculationmenu = uimenu(app.component.SWEmenu);
@@ -410,6 +414,10 @@ classdef App_Echo < matlab.apps.AppBase
                 elseif string(event.Source.Text)  == "Square shape"
                      Shape = app.general.fun.setSquareShape(app.video(app.variables.videoindex).frame{1});
                      app.video(app.variables.videoindex).Shape = Shape;
+                elseif string(event.Source.Text)  == "Auto shape"
+                    Shape = app.general.fun.autoShape(app.video(app.variables.videoindex).frame{1},app.video(app.variables.videoindex).coef);
+                    app.video(app.variables.videoindex).Shape = Shape;
+                    app.general.fun.displayShape(app.video(app.variables.videoindex).frame{1},Shape)
                 end
             end
         end
