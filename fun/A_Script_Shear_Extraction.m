@@ -50,3 +50,20 @@ saveName = [video(videoIndex).name(1:end-4),'.mat'];                       % sav
 save(saveName,"results",'-mat')                                            % save
 cd(currentForder)                                                          % go backto the function folder 
 disp(['results : ' , saveName,' is save in ', video(videoIndex).videoObject.Path])
+
+
+%% grey level 
+
+Shape = setSquareShape(video(videoIndex).frame{frameIndex});               % as a square 
+
+frameindex = 1 : video(videoIndex).videoObject.NumFrames;
+% frameindex = 12;
+
+
+[results] = greyCalculation(video(videoIndex).frame, ...
+    frameindex, ...
+    video(videoIndex).coef, ...
+    Shape, ...
+    video(videoIndex).time.Bmode);
+
+figureFrameGreyHistogram(1,results)
