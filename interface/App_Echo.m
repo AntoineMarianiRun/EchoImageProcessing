@@ -443,8 +443,9 @@ classdef App_Echo < matlab.apps.AppBase
             if isempty (app.video) % no video import / impossible 
                 errordlg('You have to import video before','unavailable process')                
             else 
-                temp = app.general.fun.scalevideo(app.video,app.variables.videoindex) ; 
-                app.video(app.variables.videoindex).coef = temp.coef; 
+                [coef_x,coef_y] = app.general.fun.scaleImage(app.video(app.variables.videoindex).frame);
+                app.video(app.variables.videoindex).coef.x = coef_x; 
+                app.video(app.variables.videoindex).coef.y = coef_y;
                 app.video(app.variables.videoindex).memory_tracking = []; 
                 app.video(app.variables.videoindex).memory_SWE = []; 
                 app.video(app.variables.videoindex).memory_processing = [] ;
