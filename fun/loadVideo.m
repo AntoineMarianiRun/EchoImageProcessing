@@ -33,7 +33,16 @@ if nargin < 2
 end
 
 % Create VideoReader object
-video_object = VideoReader(videoPath);
+videObject = VideoReader(videoPath);
+video_object.Name = videObject.Name;
+video_object.Path = videObject.Path;
+video_object.Duration = videObject.Duration;
+video_object.NumFrames = videObject.NumFrames;
+video_object.Width = videObject.Width;
+video_object.Height = videObject.Height;
+video_object.FrameRate = videObject.FrameRate;
+video_object.BitsPerPixel = videObject.BitsPerPixel;
+video_object.VideoFormat = videObject.VideoFormat;
 
 % Progress dialog
 d = uiprogressdlg(fig, 'Title', 'Please Wait', 'Message', ['Loading video : ', video_object.Name]);
@@ -43,10 +52,21 @@ numFrames = video_object.NumFrames;
 frames = cell(1, numFrames);  % Initialize the cell array for storing frames
 
 % Read video frames
-for current_frame = 1:numFrames
-    frames{current_frame} = read(video_object, current_frame);
-    d.Value = current_frame / numFrames;  % Update progress bar
+current_frame = 0;
+while 1
+    current_frame = current_frame+1;
+    try
+        frames{current_frame} = read(videObject, current_frame);
+        if (current_frame / numFrames)<1
+            d.Value = current_frame / numFrames;  % Update progress bar
+        end
+    catch
+        break
+    end
+%     
 end
+video_object.NumFrames = size(frames,2);
+
 
 % Update progress dialog message
 % d.Message = 'Finishing';

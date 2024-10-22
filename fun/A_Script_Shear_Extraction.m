@@ -52,13 +52,10 @@ cd(currentForder)                                                          % go 
 disp(['results : ' , saveName,' is save in ', video(videoIndex).videoObject.Path])
 
 
-%% grey level 
-
+%% compare each pixel contains in the shape (for each Bmode image) to a grey scale 
 Shape = setSquareShape(video(videoIndex).frame{frameIndex});               % as a square 
 
 frameindex = 1 : video(videoIndex).videoObject.NumFrames;
-% frameindex = 12;
-
 
 [results] = greyCalculation(video(videoIndex).frame, ...
     frameindex, ...
@@ -67,3 +64,5 @@ frameindex = 1 : video(videoIndex).videoObject.NumFrames;
     video(videoIndex).time.Bmode);
 
 figureFrameGreyHistogram(1,results)
+
+figureShearTemporalEvolution(results)

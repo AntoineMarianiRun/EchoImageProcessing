@@ -12,8 +12,13 @@ if length(videoPath)<=2
     end
 
     [coef_x,coef_y] = scaleImage(frames);% video scaling
-    fs = 1 / video_object.FrameRate; % sampling rate
-    time = (fs:fs:video_object.NumFrames * fs) - fs; % time vetor
+    
+    time = 1/video_object.FrameRate : 1/video_object.FrameRate : video_object.Duration; 
+    
+    if length(time) ~= video_object.NumFrames
+        time = linspace(0,video_object.Duration,size(frames,2));
+    end
+
 
     video.name = videoName;
     video.path = videoPath;
