@@ -1,8 +1,11 @@
-function [X,Y] = setPoint(selected_frame)
+function [X,Y] = setPoint(selected_frame,fig)
     click_X = [];                                                      % global variable for click position 
     click_Y = [];                                                      % global variable for click position 
-    
-    fig = figure('Name', 'frame read','Color', [1 1 1]);%,'ToolBar','none','MenuBar','none'); % figure
+
+    if nargin <2
+        fig = figure('Name', 'frame read','Color', [1 1 1]);%,'ToolBar','none','MenuBar','none'); % figure
+    end
+
     axes_im = axes('Parent', fig ,'Position',[0 0 1 1]) ;              % axis
     pltImage = image(selected_frame,'Parent',axes_im);           % image
     set(axes_im,'Layer','top','XTick',zeros(1,0),'YTick',zeros(1,0));  % set axe
@@ -13,7 +16,10 @@ function [X,Y] = setPoint(selected_frame)
     
     % ui wait 
     uiwait(fig)
-    close(fig)
+    
+    if nargin <2
+        close(fig)
+    end
 
     if length(click_X) == 1
         X = click_X;
