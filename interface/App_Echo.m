@@ -48,8 +48,15 @@ classdef App_Echo < matlab.apps.AppBase
 
                 % Tracking tools                
                 app.component.TrackinPointgmenu = uimenu(app.component.Bmodemenu);
-                app.component.TrackinPointgmenu.Text = 'Tracking point';
-                app.component.TrackinPointgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+                app.component.TrackinPointgmenu.Text = 'Tracking';
+                    % Tracking tools                
+                    app.component.TrackinManualgmenu = uimenu(app.component.TrackinPointgmenu);
+                    app.component.TrackinManualgmenu.Text = 'Manual';
+                    app.component.TrackinManualgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+                    % Tracking tools                
+                    app.component.TrackinSemiAutomaticgmenu = uimenu(app.component.TrackinPointgmenu);
+                    app.component.TrackinSemiAutomaticgmenu.Text = 'Semi automatic';
+                    app.component.TrackinSemiAutomaticgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
 
             % Pipline 
             app.component.Piplinemenu = uimenu(app.component.Bmodemenu);
@@ -453,21 +460,29 @@ classdef App_Echo < matlab.apps.AppBase
         end
 
         %% Tracking_point (ok)
-        function Tracking_point(app,~)
-            %% point name
+        function Tracking_point(app,event)
+            try
             nbmkr = length(app.video(app.variables.videoindex).memory_tracking) ;
             nbmkr = nbmkr+1;
-            [row_,col_] = app.general.fun.uiTracking(app.video(app.variables.videoindex).frame);
-            if ~any(isnan(row_)) || ~any(isnan(col_))
-                %% add to memory
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).y=row_ .* app.video(app.variables.videoindex).coef.y;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).x=col_ .* app.video(app.variables.videoindex).coef.x;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8;
+
+            if string(event.Source.Text)  == "Manual"
+                [rateOfChange] =  setRateOfChange(app.video(app.variables.videoindex).videoObject.NumFrames);
+                [row_,col_] = app.general.fun.manualTracking(app.video(app.variables.videoindex).frame,rateOfChange);
+            elseif string(event.Source.Text)  == "Semi automatic"
+                [row_,col_] = app.general.fun.uiTracking(app.video(app.variables.videoindex).frame);
             end
+
+            %% add to memory
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).y=row_ .* app.video(app.variables.videoindex).coef.y;
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).x=col_ .* app.video(app.variables.videoindex).coef.x;
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
+            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8; 
+            catch
+                errordlg('You have to import video first','error')
+            end 
         end
 
         %% function Pipline
