@@ -72,6 +72,14 @@ videoTrackingRead(frames, video.videoObject,exTracked)                     % sho
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [row_,col_] = uiTracking(video(videoIndex).frame);
 
+
+%% manual tracking 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+frames = video(videoIndex).frame; 
+rateOfChange = 24;                                                         % set coordonate each n image 
+[row_,col_]= manualTracking(frames,24); 
+
+
 %% 3/  Muscle architecture exemple
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 3.1. set two markers for deep apponevroses, surface apponevroses and
