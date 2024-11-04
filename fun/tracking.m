@@ -3,7 +3,8 @@ function [row,col,minValue] = tracking(frames,template,currentTemplateRow,curren
 defaultOpts.showHeatMap = "off";
 defaultOpts.showTemplate = "off";
 defaultOpts.progressBar = "off";
-
+defaultOpts.maxError = 1;
+defaultOpts.rateOfDisplay = 5;
 
 % check option 
 if nargin > 7
@@ -22,6 +23,8 @@ if opts.progressBar == "on"
     fig.WindowStyle ="modal";
     d = uiprogressdlg(fig, 'Title', 'Please Wait', 'Message', 'Tracking progress');
 end
+
+figTracking = figure('Name','Show tracking','Color',[1 1 1]);
 
 
 
@@ -46,8 +49,12 @@ minValue = nan(1,nbFrames);
 col(1) = currentTemplateCol;
 row(1) = currentTemplateRow;
 
+
+
+
 for currentFrame = 1 : nbFrames
     currentImage = frames{currentFrame};
+
 
     if currentFrame == 1
         currentZoneOfInterest = corpImageAsRectangle(currentImage, ...         % curent image to analyse
@@ -63,26 +70,35 @@ for currentFrame = 1 : nbFrames
     errMatrix = compareImage2Pattern(currentZoneOfInterest,template,method);        % pattern matching 
     [currentError,rowOffset,colOffset] = minError(errMatrix);  
 
-    if currentFrame == 1
-        if ~isnan(currentError)
-            minValue(currentFrame) = currentError;
-            col(currentFrame) = col(currentFrame) + colOffset;
-            row(currentFrame) = row(currentFrame) + rowOffset;
+    if currentError >  opts.maxError
+        [col(currentFrame),row(currentFrame),template] = setImageTemplate(frames{currentFrame},nTemplateRow,nTemplateCol); % set the template (set position: rigth mouse clic, clear mouse position : left clic, validate : enter)
+    else 
+        if currentFrame == 1
+            if ~isnan(currentError)
+                minValue(currentFrame) = currentError;
+                col(currentFrame) = col(currentFrame) + colOffset;
+                row(currentFrame) = row(currentFrame) + rowOffset;
+            else
+                minValue(currentFrame) = 1;
+                col(currentFrame) = col(currentFrame);
+                row(currentFrame) = row(currentFrame);
+            end
         else
-            minValue(currentFrame) = 1;
-            col(currentFrame) = col(currentFrame);
-            row(currentFrame) = row(currentFrame);
+            if ~isnan(currentError)
+                minValue(currentFrame) = currentError;
+                col(currentFrame) = col(currentFrame-1) + colOffset;
+                row(currentFrame) = row(currentFrame-1) + rowOffset;
+            else
+                minValue(currentFrame) = 1;
+                col(currentFrame) = col(currentFrame-1);
+                row(currentFrame) = row(currentFrame-1);
+            end                                       % zone of intest size
         end
-    else
-        if ~isnan(currentError)
-            minValue(currentFrame) = currentError;
-            col(currentFrame) = col(currentFrame-1) + colOffset;
-            row(currentFrame) = row(currentFrame-1) + rowOffset;
-        else
-            minValue(currentFrame) = 1;
-            col(currentFrame) = col(currentFrame-1);
-            row(currentFrame) = row(currentFrame-1);
-        end                                       % zone of intest size
+    end
+
+
+    if mod(currentFrame,opts.rateOfDisplay) == 1
+        [figTracking] = upDateAxes(figTracking,frames{currentFrame},row,col,nTemplateRow/2,nTemplateCol/2,currentFrame,nbFrames);
     end
 
 
@@ -136,3 +152,22 @@ function opts = mergeOptions(defaultOpts, userOpts)
         end
     end
 end
+
+
+function [fig] = upDateAxes(fig,current_frame,currentTemplateRow,currentTemplateCol,nPixRow,nPixCol,numFrames,numFramesMax)
+    clf(fig)
+    
+    im = axes('Parent', fig, 'Position', [0 0 1 .95]);
+    hold (im,'on')
+
+    im = drawBoxCorner(im,current_frame, ...
+        [currentTemplateCol(numFrames)-nPixCol , currentTemplateCol(numFrames)+nPixCol ], ...
+        [currentTemplateRow(numFrames)-nPixRow , currentTemplateRow(numFrames)+nPixRow ]);
+
+    plot(im,currentTemplateCol(numFrames),currentTemplateRow(numFrames),'+r');
+
+    plot (im, currentTemplateCol,currentTemplateRow, '-g','LineWidth',1.5)
+    title(im,['Frame n°', num2str(numFrames),'/',num2str(numFramesMax)])
+    fig.WindowStyle = 'modal';
+    fig.WindowStyle = 'normal';
+end 

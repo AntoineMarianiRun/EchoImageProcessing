@@ -51,7 +51,7 @@ end
         end
 
         % plot line
-        [pltImage] = drawBoxCorner(axes_im,selected_frame,click_X,click_Y);
+        [axes_im,pltImage]  = drawBoxCorner(axes_im,selected_frame,click_X,click_Y);
         pltImage.ButtonDownFcn = @(src, event) axesClickCallback(src, event, selected_frame, axes_im,pltImage);
     end
 end
