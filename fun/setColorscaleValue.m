@@ -15,7 +15,7 @@ end
 if txt == "kPa"
     colorScaleValue = linspace(0,Maxvalue,length(colorScaleRGBdouble));
 elseif txt == "m/s"
-    colorScaleValue_ms = linspace(0,Maxvalue,length(colorScaleRGBdouble));
+    colorScaleValue_ms = sqrt(linspace(0,Maxvalue^2,length(colorScaleRGBdouble)));% no linearity of the scale 
     colorScaleValue = VS2SM(colorScaleValue_ms);
     colorScaleValue = colorScaleValue./1000;
 end

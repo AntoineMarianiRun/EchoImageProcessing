@@ -3,7 +3,7 @@
 %% get the the video and scale it
 video =  uiGetVideo(); 
 
-%% video selected 
+% video selected 
 videoIndex = 1; % first video import
 frameIndex = 1; % first frame to set the shape 
 
@@ -26,6 +26,7 @@ ShowColorScale(video(videoIndex).colorScale.colorScaleRGBuint8, ...
 
 [Shape] = autoShape(video(videoIndex).frame{frameIndex}, ...
     video(videoIndex).coef);                                               % 1cm^2 on the middle of swe zone 
+
 %% compare each pixel contains in the shape (for each SWE image) to the
 results = colorCalculation(video(videoIndex).frame,...                     % frames 
     video(videoIndex).time.SWindex,...                                     % index of the swe images
