@@ -47,13 +47,13 @@ while stateScaling == false
 
     %% Grey mapping
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    opts.Interpreter = 'tex'; opts.Default = 'Yes'; %option
-    dlg = questdlg('Do you want to perform grey level analysis?','echo type',"Yes","No",opts);
-    if strcmpi(string(dlg),"Yes")
-        disp('     - Select zone to perform grey level analysis ')
-        greyShape = setSquareShape(frames{1});
-        preScale.greyShape = greyShape;
-    end
+%     opts.Interpreter = 'tex'; opts.Default = 'Yes'; %option
+%     dlg = questdlg('Do you want to perform grey level analysis?','echo type',"Yes","No",opts);
+%     if strcmpi(string(dlg),"Yes")
+%         disp('     - Select zone to perform grey level analysis ')
+%         greyShape = setSquareShape(frames{1});
+%         preScale.greyShape = greyShape;
+%     end
 
 
     %% color map
@@ -67,16 +67,16 @@ while stateScaling == false
         [colorScaleRGBuint8,colorScaleRGBdouble,colorScaleValue] = setColorScale(frames{1});
         close all
 
-        % about Zone of interest
-        disp('     - Select zone to perform color analysis ')
-        dlg1 = questdlg('what type of zone you want?','echo type',"Auto","Square","Custum",opts);
-        if strcmpi(string(dlg1),"Auto")
-            sweShape = autoShape(frames{1},preScale.coef);
-        elseif strcmpi(string(dlg1),"Square")
-            sweShape = setSquareShape(frames{1});
-        elseif strcmpi(string(dlg1),"Custum")
-            sweShape = setCustumShape(frames{1});
-        end
+%         % about Zone of interest
+%         disp('     - Select zone to perform color analysis ')
+%         dlg1 = questdlg('what type of zone you want?','echo type',"Auto","Square","Custum",opts);
+%         if strcmpi(string(dlg1),"Auto")
+%             sweShape = autoShape(frames{1},preScale.coef);
+%         elseif strcmpi(string(dlg1),"Square")
+%             sweShape = setSquareShape(frames{1});
+%         elseif strcmpi(string(dlg1),"Custum")
+%             sweShape = setCustumShape(frames{1});
+%         end
 
         disp('     - Set SWE frame Rate ')
         [timeSWE,indexImgSWE]= setSSIFrameRate(frames,timeBmode);
@@ -86,12 +86,12 @@ while stateScaling == false
         preScale.colorScale.colorScaleRGBuint8 = colorScaleRGBuint8;
         preScale.colorScale.colorScaleRGBdouble = colorScaleRGBdouble;
         preScale.colorScale.colorScaleValue = colorScaleValue;
-        preScale.sweShape = sweShape;
+%         preScale.sweShape = sweShape;
 
         dlg = questdlg('is prescaling ok?','echo type',"Yes","No","Abort",opts);
         if strcmpi(string(dlg),"Yes")
             stateScaling = true;
-            saveName = [preScale.name(1:end-4),'_preScaleFiles.mat'];
+            saveName = [preScale.name(1:end-4),'.mat'];
             save(saveName,"preScale")
         elseif strcmpi(string(dlg),"Abort")
             stateScaling = true;
