@@ -1,5 +1,5 @@
 function [colorScaleValue] = setColorscaleValue(colorScaleRGBuint8,colorScaleRGBdouble)
-opts.Interpreter = 'tex'; opts.Default = 'Yes'; %option
+opts.Interpreter = 'tex'; opts.Default = "m/s"; %option
 dlg = questdlg('What is the scale unit?',...
     'echo type',...
     "kPa","m/s",opts);
