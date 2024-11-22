@@ -1,4 +1,4 @@
-function [output_position] = setAxis(frames,scaled_axis,frame_number)
+function [output_position,fig] = setAxis(frames,scaled_axis,frame_number)
 if nargin < 3
     frame_number = 1 ;
 end
@@ -34,7 +34,7 @@ fig.WindowKeyPressFcn =@(fig,event) KeyPressFcn(fig,event);        % press "ok" 
 % ui wait
 uiwait(fig)
 output_position = position;
-delete(fig)
+fig.WindowKeyPressFcn = [];
 
 % callback
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
