@@ -11,7 +11,7 @@ nPixCol_ = round(round(1/coef.x) * cm);
 nPixRow_ = round(round(1/coef.y)* cm);
 
 % get the position of the color map 
-[col_,row_] = setOneCmBox(frame,nPixCol_,nPixRow_);
+[col_,row_] = setPoint(frame);
 
 % get the ceter of colormap
 rowCenter_ = floor(mean(row_));
