@@ -70,9 +70,29 @@ for currentFrame = 1 : nbFrames
     errMatrix = compareImage2Pattern(currentZoneOfInterest,template,method);        % pattern matching 
     [currentError,rowOffset,colOffset] = minError(errMatrix);  
 
-    if currentError >  opts.maxError
-        [col(currentFrame),row(currentFrame),template] = setImageTemplate(frames{currentFrame},nTemplateRow,nTemplateCol); % set the template (set position: rigth mouse clic, clear mouse position : left clic, validate : enter)
-    else 
+    if currentError >  opts.maxError && currentFrame~=1
+        disp(['Low correlation at frame ', num2str(currentFrame)]);
+        choice = questdlg('Is the selected region correct?', 'Confirm Region', 'Yes', 'No', 'No');
+
+        switch choice
+            case 'Yes'
+                if ~isnan(currentError)
+                    minValue(currentFrame) = currentError;
+                    col(currentFrame) = col(currentFrame-1) + colOffset;
+                    row(currentFrame) = row(currentFrame-1) + rowOffset;
+                else
+                    minValue(currentFrame) = 1;
+                    col(currentFrame) = col(currentFrame-1);
+                    row(currentFrame) = row(currentFrame-1);
+                end                                       % zone of intest size
+                template = corpImageAsRectangle(currentImage,col(currentFrame),row(currentFrame),nTemplateRow,nTemplateCol);
+
+            case 'No'
+                [col(currentFrame),row(currentFrame),template] = setImageTemplate(frames{currentFrame},nTemplateRow,nTemplateCol, row(1:currentFrame-1), col(1:currentFrame-1)); % set the template (set position: rigth mouse clic, clear mouse position : left clic, validate : enter)
+                minValue(currentFrame) = currentError;
+        end
+
+    else
         if currentFrame == 1
             if ~isnan(currentError)
                 minValue(currentFrame) = currentError;
@@ -95,7 +115,6 @@ for currentFrame = 1 : nbFrames
             end                                       % zone of intest size
         end
     end
-
 
     if mod(currentFrame,opts.rateOfDisplay) == 1
         [figTracking] = upDateAxes(figTracking,frames{currentFrame},row,col,nTemplateRow/2,nTemplateCol/2,currentFrame,nbFrames);
