@@ -1,4 +1,4 @@
-function [Shape] = setSquareShapeCm(frame,coef,cm)
+function [Shape] = setSquareShapeFixedCm(frame,coef,cmwidth,cmhight)
 % this function automaticlly select a square shape in the midlle of the swe
 % zone of on cm^2 and return a true false matrix Shape
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -7,8 +7,8 @@ function [Shape] = setSquareShapeCm(frame,coef,cm)
 Shape = zeros(nRowFrame,nColFrame);
 
 % size of zone of interest in pix 
-nPixCol_ = round(round(1/coef.x) * cm);
-nPixRow_ = round(round(1/coef.y)* cm);
+nPixCol_ = round(round(1/coef.x) * cmwidth);
+nPixRow_ = round(round(1/coef.y)* cmhight);
 
 % get the position of the color map 
 [col_,row_] = setOneCmBox(frame,nPixCol_,nPixRow_);
