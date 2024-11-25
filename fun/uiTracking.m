@@ -78,7 +78,7 @@ function [row_,col_] = uiTracking(frame)
     %% **About Tracking Section**
     ForTrackingLabel = uilabel(LeftPanel);
     ForTrackingLabel.HorizontalAlignment = 'center';
-    ForTrackingLabel.Position = [10 260 200 28];
+    ForTrackingLabel.Position = [10 280 200 28];
     ForTrackingLabel.Text = 'About Tracking';
     ForTrackingLabel.FontAngle = 'italic';
     ForTrackingLabel.FontSize = 16;
@@ -86,12 +86,12 @@ function [row_,col_] = uiTracking(frame)
     % Vertical Drift Spinner
     VerticalSpinnerLabel = uilabel(LeftPanel);
     VerticalSpinnerLabel.HorizontalAlignment = 'left';
-    VerticalSpinnerLabel.Position = [10 210 80 22];
+    VerticalSpinnerLabel.Position = [10 240 80 22];
     VerticalSpinnerLabel.Text = 'Vertical';
     VerticalSpinnerLabel.FontWeight = 'bold';
 
     VerticalSpinner = uispinner(LeftPanel);
-    VerticalSpinner.Position = [100 210 110 22];
+    VerticalSpinner.Position = [100 240 110 22];
     VerticalSpinner.Limits = [0 100];
     VerticalSpinner.Step = 1;
     VerticalSpinner.Value = verticalDrift_;
@@ -99,12 +99,12 @@ function [row_,col_] = uiTracking(frame)
     % Horizontal Drift Spinner
     HorizontalSpinnerLabel = uilabel(LeftPanel);
     HorizontalSpinnerLabel.HorizontalAlignment = 'left';
-    HorizontalSpinnerLabel.Position = [10 170 80 22];
+    HorizontalSpinnerLabel.Position = [10 200 80 22];
     HorizontalSpinnerLabel.Text = 'Horizontal';
     HorizontalSpinnerLabel.FontWeight = 'bold';
 
     HorizontalSpinner = uispinner(LeftPanel);
-    HorizontalSpinner.Position = [100 170 110 22];
+    HorizontalSpinner.Position = [100 200 110 22];
     HorizontalSpinner.Limits = [0 1000];
     HorizontalSpinner.Step = 1;
     HorizontalSpinner.Value = horizontalDrift_;
@@ -112,21 +112,34 @@ function [row_,col_] = uiTracking(frame)
         % Horizontal Drift Spinner
     ChangeRateLabel = uilabel(LeftPanel);
     ChangeRateLabel.HorizontalAlignment = 'left';
-    ChangeRateLabel.Position = [10 130 80 22];
+    ChangeRateLabel.Position = [10 160 80 22];
     ChangeRateLabel.Text = 'Update template';
     ChangeRateLabel.FontWeight = 'bold';
 
     ChangeRateSpinner = uispinner(LeftPanel);
-    ChangeRateSpinner.Position = [100 130 110 22];
+    ChangeRateSpinner.Position = [100 160 110 22];
     ChangeRateSpinner.Limits = [1 inf];
     ChangeRateSpinner.Step = 1;
     ChangeRateSpinner.Value = rateOfChange;
+
+        % error Spinner
+    ErrorLabel = uilabel(LeftPanel);
+    ErrorLabel.HorizontalAlignment = 'left';
+    ErrorLabel.Position = [10 120 80 22];
+    ErrorLabel.Text = 'Tolerated error';
+    ErrorLabel.FontWeight = 'bold';
+
+    ErrorSpinner = uispinner(LeftPanel);
+    ErrorSpinner.Position = [100 120 110 22];
+    ErrorSpinner.Limits = [0 1];
+    ErrorSpinner.Step = 0.01;
+    ErrorSpinner.Value = 0.20;
 
     HeigthSpinner.ValueChangingFcn =  @(src, event) updateGlobale(HeigthSpinner,WidthSpinner);
     WidthSpinner.ValueChangingFcn =  @(src, event) updateGlobale(HeigthSpinner,WidthSpinner);
     VerticalSpinner.ValueChangingFcn =  @(src, event) updateGlobale(HeigthSpinner,WidthSpinner);
     HorizontalSpinner.ValueChangingFcn =  @(src, event) updateGlobale(HeigthSpinner,WidthSpinner);
-
+    ErrorSpinner.ValueChangingFcn =  @(src, event) updateGlobale(HeigthSpinner,WidthSpinner);
 
     %% **Interaction Buttons**
     % Perform Tracking Button
@@ -255,6 +268,8 @@ function [row_,col_] = uiTracking(frame)
                 double(HeigthSpinner.Value), ...
                 double(WidthSpinner.Value));
             opts.progressBar = "on";
+            opts.maxError = ErrorSpinner.Value;
+
             [row_,col_,~] = tracking(frame,template,row_(frameIndex),col_(frameIndex), ...
                 double(VerticalSpinner.Value), ...
                 double(HorizontalSpinner.Value), ...
