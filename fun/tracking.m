@@ -72,7 +72,21 @@ for currentFrame = 1 : nbFrames
 
     if currentError >  opts.maxError && currentFrame~=1
         disp(['Low correlation at frame ', num2str(currentFrame)]);
-        choice = questdlg('Is the selected region correct?', 'Confirm Region', 'Yes', 'No', 'No');
+
+        [figTracking] = upDateAxes(figTracking,...
+            frames{currentFrame},...
+            (ones(1,nbFrames) * row(currentFrame-1)) + rowOffset, ...
+            (ones(1,nbFrames) * col(currentFrame-1))+ colOffset, ...
+            nTemplateRow/2,nTemplateCol/2, ...
+            currentFrame, ...
+            nbFrames);
+
+
+
+        opts.Interpreter = 'tex'; opts.Default = "Yes"; %option
+        choice = questdlg('Is the selected region correct?',...
+            'Confirm Region',...
+            "Yes","No",opts);
 
         switch choice
             case 'Yes'
@@ -88,7 +102,7 @@ for currentFrame = 1 : nbFrames
                 template = corpImageAsRectangle(currentImage,col(currentFrame),row(currentFrame),nTemplateRow,nTemplateCol);
 
             case 'No'
-                [col(currentFrame),row(currentFrame),template] = setImageTemplate(frames{currentFrame},nTemplateRow,nTemplateCol, row(1:currentFrame-1), col(1:currentFrame-1)); % set the template (set position: rigth mouse clic, clear mouse position : left clic, validate : enter)
+                [col(currentFrame),row(currentFrame),template] = setImageTemplate(frames{currentFrame},nTemplateRow,nTemplateCol); % set the template (set position: rigth mouse clic, clear mouse position : left clic, validate : enter)
                 minValue(currentFrame) = currentError;
         end
 

@@ -46,10 +46,10 @@ nPixRow = 10;                                                              % pos
 rateOfChange = 10;                                                         % Rate update of the template in number of frame (deformation of the medium) 
 
 % options tracking 
-opts.showHeatMap = "on";
+opts.showHeatMap = "off";
 opts.showTemplate = "off";
 opts.progressBar = "off";
-opts.maxError =  0.2; 
+opts.maxError =  0.05; 
 opts.rateOfDisplay = 10;
 
 [row,col,minValue] = tracking(frames, ...
