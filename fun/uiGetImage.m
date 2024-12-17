@@ -15,7 +15,7 @@ bxl.Position = [50 100 250 180] ;
 
 % search files btn
 btn_search = uibutton('push','Parent',fig);
-btn_search.Text = {'Search', 'video' , 'files'} ;
+btn_search.Text = {'Search', 'image' , 'files'} ;
 btnX1 = 350;
 btnY1 = 200;
 btnWidth1 = 70;
@@ -24,7 +24,7 @@ btn_search.Position = [btnX1 btnY1 btnWidth1 btnHeight1];
 
 % clear files btn
 btn_clear = uibutton('push','Parent',fig);
-btn_clear.Text = 'clear video files' ;
+btn_clear.Text = 'clear image files' ;
 btn_clear.Enable = "off" ;
 btnX2 = 350;
 btnY2 = 100;
@@ -34,7 +34,7 @@ btn_clear.Position = [btnX2 btnY2 btnWidth2 btnHeight2];
 
 % load files btn
 btn_load = uibutton('push','Parent',fig);
-btn_load.Text = 'Import video files' ;
+btn_load.Text = 'Import image files' ;
 btn_load.Enable = "off" ;
 btnX3 = 125;
 btnY3 = 50;
