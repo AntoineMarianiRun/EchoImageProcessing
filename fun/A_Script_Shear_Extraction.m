@@ -7,8 +7,13 @@ video =  uiGetVideo();
 videoIndex = 1; % first video import
 frameIndex = 1; % first frame to set the shape 
 
+%% improve video quality for tracking
+coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
+video(videoIndex).frame_improved = enhanceFrames(video(videoIndex).frame,coord);
 %% read the video
-% videoRead(video(videoIndex).frame,video(videoIndex).videoObject)           % read the video 
+videoRead(video(videoIndex).frame,video(videoIndex).videoObject)           % read the video 
+videoRead(video(videoIndex).frame_improved,video(videoIndex).videoObject)           % read the video 
+
 % frameRead(video(videoIndex).frame,frameIndex)                              % show a sigle frame
 
 %% show colorscale 

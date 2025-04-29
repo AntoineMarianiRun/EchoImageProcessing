@@ -12,6 +12,15 @@ function global_frames = enhanceFrames(frames, ROI)
 %
 % Author: Ophelie LARIVIERE, Last review: 24/04/2025
 
+if length(ROI.x) == 2
+    ROI.x = ROI.x(1):ROI.x(2);
+end 
+
+if length(ROI.y) == 2
+    ROI.y = ROI.y(1):ROI.y(2);
+end 
+
+
 numFrames = numel(frames);
 filteredFrames = cell(1, numFrames);
 originalType = class(frames{1});
