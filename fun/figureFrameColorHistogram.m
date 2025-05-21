@@ -1,13 +1,16 @@
 function figureFrameColorHistogram(video,videoidx,frameidx,results)
 
 % color map
-barColors = length(video(videoidx).colorScale.colorScaleValue) -1 ;
+barColors = length(video(videoidx).colorScale.colorScaleValue) ;
 
 map = ([video(videoidx).colorScale.colorScaleRGBuint8(:,:,1), ...
     video(videoidx).colorScale.colorScaleRGBuint8(:,:,2),...
     video(videoidx).colorScale.colorScaleRGBuint8(:,:,3)]) ;
 % data
 Value = results.pixValue{results.frameIndex(frameidx)} ;
+scale_value =  video(videoidx).colorScale.colorScaleValue;
+step_size = abs(diff(scale_value));
+step_size(end+1) = step_size(end);
 
 % Create figure
 figure1 = figure('Name','Histogram','Color',[1 1 1],'ToolBar','none','MenuBar','none');
@@ -18,7 +21,11 @@ axes1 = axes('Parent',figure1,...
 hold(axes1,'on');
 
 for i = 1 : barColors
-    histogram(Value,'Parent',axes1, 'BinEdges', [video(videoidx).colorScale.colorScaleValue(i) video(videoidx).colorScale.colorScaleValue(i+1)], 'DisplayStyle', 'bar', 'EdgeColor', 'none', 'FaceColor',map(i,:))%, 'BarWidth', 1);
+    histogram(Value,'Parent',axes1, 'BinEdges', ...
+        [scale_value(i) - 0.5 * step_size(i), scale_value(i) + 0.5 * step_size(i)], ...
+        'DisplayStyle', 'bar', ...
+        'EdgeColor', 'none', ...
+        'FaceColor',map(i,:))%, 'BarWidth', 1);
 end
 xlim ([0 max(video(videoidx).colorScale.colorScaleValue)])
 box(axes1,'on');
