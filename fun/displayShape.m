@@ -1,14 +1,14 @@
-function displayShape(selected_frame,Shape)
+function displayShape(selected_frame,Shape,brightness)
     % Create a 3D mask by replicating the inShape matrix across the third dimension
     mask = repmat(Shape, [1, 1, 3]);
+
+    % Create a dimmed version of the original frame (brightness)
+    shadedBackground = uint8(double(selected_frame) * brightness);
     
-    % Create a black image of the same size
-    blackImage = zeros(size(selected_frame), 'uint8');
-    
-    % Combine the original image with the black image using the mask
+    % Blend the original image with the shaded background using the mask
     outputImage = selected_frame;
-    outputImage(~mask) = blackImage(~mask);
-    
+    outputImage(~mask) = shadedBackground(~mask);
+
     % plot
     fig = figure('Name', 'selected zone','Color', [1 1 1],'ToolBar','none','MenuBar','none'); % figure
     axes_im = axes('Parent', fig ,'Position',[0 0 1 1]) ;              % axis
