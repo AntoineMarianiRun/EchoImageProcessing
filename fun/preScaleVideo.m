@@ -61,32 +61,40 @@ if ~isnumeric(f_)
             preScale.coef.x = coef_x; % col factor
             preScale.coef.y = coef_y; % row factor
 
-            try
-                % Swe
-                %%%%%%%%%%%%%%
-                % color scale
-                disp('     - Set color scale ')
-                frameRead(frames,1)
-                [colorScaleRGBuint8,colorScaleRGBdouble,colorScaleValue] = setColorScale(frames{1}); % color scale
-                close all
 
-                % add to the structure preScale
-                preScale.colorScale.colorScaleRGBuint8 = colorScaleRGBuint8;
-                preScale.colorScale.colorScaleRGBdouble = colorScaleRGBdouble;
-                preScale.colorScale.colorScaleValue = colorScaleValue;
+            opts.Interpreter = 'tex'; opts.Default = 'Yes'; %option
+            dlg1 = questdlg('is the images contains color map?',...
+                'echo type',...
+                "Yes","No",opts);
+            if strcmpi(string(dlg1),"Yes")
+                try
+                    % Swe
+                    %%%%%%%%%%%%%%
+                    % color scale
+                    disp('     - Set color scale ')
+                    frameRead(frames,1)
+                    [colorScaleRGBuint8,colorScaleRGBdouble,colorScaleValue] = setColorScale(frames{1}); % color scale
+                    close all
 
-                % frame rate
-                disp('     - Set SWE frame rate ')
-                [timeSWE,indexImgSWE]= setSSIFrameRate(frames,timeBmode);
+                    % add to the structure preScale
+                    preScale.colorScale.colorScaleRGBuint8 = colorScaleRGBuint8;
+                    preScale.colorScale.colorScaleRGBdouble = colorScaleRGBdouble;
+                    preScale.colorScale.colorScaleValue = colorScaleValue;
 
-                % add to the structure preScale
-                preScale.time.SWE = timeSWE;
-                preScale.time.SWindex = indexImgSWE;
-            catch
-                disp('this file did not contain SWE map')
-                close all
+                    % frame rate
+                    disp('     - Set SWE frame rate ')
+                    [timeSWE,indexImgSWE]= setSSIFrameRate(frames,timeBmode);
+
+                    % add to the structure preScale
+                    preScale.time.SWE = timeSWE;
+                    preScale.time.SWindex = indexImgSWE;
+                catch
+                    disp('this file did not contain SWE map')
+                    close all
+                end
+            elseif strcmpi(string(dlg1),"No")
+                preScale.colorScale = "None";
             end
-
             % OK
             %%%%%%%%%%%%%%
             opts.Interpreter = 'tex'; opts.Default = 'Yes'; % options
@@ -98,27 +106,22 @@ if ~isnumeric(f_)
                 stateScaling = true;
             end
         end
+
     end
 end
 end
 
 
+
 function savePrescale(preScale)
-origin = cd;
+% name for saving 
+[path, name, ~] = fileparts(preScale.path);
+name = [name,'.mat'];
+save_path_name = fullfile(path, name);
 
-saveName = [preScale.name(1:end-4),'.mat'];
+% save 
+save(save_path_name,"preScale",'-mat')
 
-% find the path 
-savePath = preScale.path;
-tf = savePath == '/'| savePath == '\';
-idx = find(tf,1,"last");
-savePath =savePath(1 : idx-1);
-
-cd(savePath)
-save(saveName,"preScale",'-mat')
-cd(origin)
-
-disp(['file : ', saveName, ' save in : ',savePath ])
-
-
-end 
+%disp
+disp(['file : ', name, ' save in : ',path ])
+end
