@@ -26,123 +26,188 @@ classdef App_Echo < matlab.apps.AppBase
             %% MenuBar --> Home
             app.component.Homemenu = uimenu(app.component.figure);
             app.component.Homemenu.Text = 'Home';
-                % loadfiles
-                app.component.loadfilesmenu = uimenu(app.component.Homemenu);
-                app.component.loadfilesmenu.Text = 'Load Video';
-                app.component.loadfilesmenu.MenuSelectedFcn =createCallbackFcn(app, @loadfiles, true);
-                % exportresults
-                app.component.exportresultsmenu = uimenu(app.component.Homemenu);
-                app.component.exportresultsmenu.Text = 'Export results';
-                app.component.exportresultsmenu.MenuSelectedFcn =createCallbackFcn(app, @export, true);
+
+            % loadfiles
+            app.component.loadfilesmenu = uimenu(app.component.Homemenu);
+            app.component.loadfilesmenu.Text = 'Load Video';
+            app.component.loadfilesmenu.MenuSelectedFcn =createCallbackFcn(app, @loadfiles, true);
+
+            % exportprescale
+            app.component.exportscalingmenu = uimenu(app.component.Homemenu);
+            app.component.exportscalingmenu.Text = 'Export scaling';
+            app.component.exportscalingmenu.MenuSelectedFcn =createCallbackFcn(app, @exportscaling, true);
+
+            % exportresults
+            app.component.exportresultsmenu = uimenu(app.component.Homemenu);
+            app.component.exportresultsmenu.Text = 'Export results';
+            app.component.exportresultsmenu.MenuSelectedFcn =createCallbackFcn(app, @export, true);
 
             %%  MenuBar --> Tools
             app.component.Bmodemenu = uimenu(app.component.figure);
             app.component.Bmodemenu.Text = 'B-Mode';
-               % Setup B-mode
-                app.component.SetUpBModemenu = uimenu(app.component.Bmodemenu);
-                app.component.SetUpBModemenu.Text = 'Setup';
-                    % Calibration of B-mode
-                    app.component.CalibrationBModemenu = uimenu(app.component.SetUpBModemenu);
-                    app.component.CalibrationBModemenu.Text = 'Calibration of B-mode';
-                    app.component.CalibrationBModemenu.MenuSelectedFcn =createCallbackFcn(app, @SetUpBMode, true);
+            % Setup B-mode
+            app.component.SetUpBModemenu = uimenu(app.component.Bmodemenu);
+            app.component.SetUpBModemenu.Text = 'Setup';
 
-                % Tracking tools                
-                app.component.TrackinPointgmenu = uimenu(app.component.Bmodemenu);
-                app.component.TrackinPointgmenu.Text = 'Tracking';
-                    % Tracking tools                
-                    app.component.TrackinManualgmenu = uimenu(app.component.TrackinPointgmenu);
-                    app.component.TrackinManualgmenu.Text = 'Manual';
-                    app.component.TrackinManualgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
-                    % Tracking tools                
-                    app.component.TrackinSemiAutomaticgmenu = uimenu(app.component.TrackinPointgmenu);
-                    app.component.TrackinSemiAutomaticgmenu.Text = 'Semi automatic';
-                    app.component.TrackinSemiAutomaticgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+            % Calibration of B-mode
+            app.component.CalibrationBModemenu = uimenu(app.component.SetUpBModemenu);
+            app.component.CalibrationBModemenu.Text = 'Calibration of B-mode';
+            app.component.CalibrationBModemenu.MenuSelectedFcn =createCallbackFcn(app, @SetUpBMode, true);
 
-            % Pipline 
+            % Tracking tools
+            app.component.TrackinPointgmenu = uimenu(app.component.Bmodemenu);
+            app.component.TrackinPointgmenu.Text = 'Tracking';
+
+            % Tracking tools
+            app.component.TrackinManualgmenu = uimenu(app.component.TrackinPointgmenu);
+            app.component.TrackinManualgmenu.Text = 'Manual';
+            app.component.TrackinManualgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+
+            % Tracking tools
+            app.component.TrackinSemiAutomaticgmenu = uimenu(app.component.TrackinPointgmenu);
+            app.component.TrackinSemiAutomaticgmenu.Text = 'Semi automatic';
+            app.component.TrackinSemiAutomaticgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+
+            % Pipline
             app.component.Piplinemenu = uimenu(app.component.Bmodemenu);
             app.component.Piplinemenu.Text = 'Pipline';
-                % set SWE Frame rate  (SWEFramerate
-                app.component.SWEFrameratemenu = uimenu(app.component.Piplinemenu);
-                app.component.SWEFrameratemenu.Text = 'Angle';
-                app.component.SWEFrameratemenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
-                % calculation SWE (SWEcalculation)
-                app.component.SWEcalculationmenu = uimenu(app.component.Piplinemenu);
-                app.component.SWEcalculationmenu.Text = 'Structure';
-                app.component.SWEcalculationmenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
 
-            % Tracking filter 
+            % set SWE Frame rate  (SWEFramerate
+
+            app.component.SWEFrameratemenu = uimenu(app.component.Piplinemenu);
+            app.component.SWEFrameratemenu.Text = 'Angle';
+            app.component.SWEFrameratemenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
+
+            % calculation SWE (SWEcalculation)
+            app.component.SWEcalculationmenu = uimenu(app.component.Piplinemenu);
+            app.component.SWEcalculationmenu.Text = 'Structure';
+            app.component.SWEcalculationmenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
+
+            % Tracking filter
             app.component.TrackingFiltermenu = uimenu(app.component.Bmodemenu);
             app.component.TrackingFiltermenu.Text = 'Filter';
-%            app.component.TrackingFiltermenu =createCallbackFcn(app, @Filter, true);
+            %            app.component.TrackingFiltermenu =createCallbackFcn(app, @Filter, true);
+
+            %%  MenuBar --> greylevel
+            app.component.greyLevelmenu = uimenu(app.component.figure);
+            app.component.greyLevelmenu.Text = 'Grey Level';
+
+            % Set Up greylevel
+            app.component.SetUpZoneOfInterestBModemenu = uimenu(app.component.greyLevelmenu);
+            app.component.SetUpZoneOfInterestBModemenu.Text = 'Set zone of interest';
+
+            % Set Up Square
+            app.component.SetUpZoneOfInterestBModeSquaremenu = uimenu(app.component.SetUpZoneOfInterestBModemenu);
+            app.component.SetUpZoneOfInterestBModeSquaremenu.Text = 'Square zone of interest';
+            app.component.SetUpZoneOfInterestBModeSquaremenu.MenuSelectedFcn =createCallbackFcn(app, @setZoneOfInterestBmode, true);
+
+            % Set Up Square
+            app.component.SetUpZoneOfInterestBModeSquare1cmmenu = uimenu(app.component.SetUpZoneOfInterestBModemenu);
+            app.component.SetUpZoneOfInterestBModeSquare1cmmenu.Text = 'Square 1cm^2 zone of interest';
+            app.component.SetUpZoneOfInterestBModeSquare1cmmenu.MenuSelectedFcn =createCallbackFcn(app, @setZoneOfInterestBmode, true);
+
+            % Set Up Square
+            app.component.SetUpZoneOfInterestBModeCustummenu = uimenu(app.component.SetUpZoneOfInterestBModemenu);
+            app.component.SetUpZoneOfInterestBModeCustummenu.Text = 'Custum zone of interest';
+            app.component.SetUpZoneOfInterestBModeCustummenu.MenuSelectedFcn =createCallbackFcn(app, @setZoneOfInterestBmode, true);
+
+            % Calcualtion Pipline
+            app.component.greyLevelCaluculationmenu = uimenu(app.component.greyLevelmenu);
+            app.component.greyLevelCaluculationmenu.Text = 'Start grey level calculation';
+            app.component.greyLevelCaluculationmenu.MenuSelectedFcn =createCallbackFcn(app, @Grey_Level_Calculation, true);
+
+            % grey level illustration
+            app.component.greyLevelIllustractionmenu = uimenu(app.component.greyLevelmenu);
+            app.component.greyLevelIllustractionmenu.Text = 'grey level illustration';
+
+            % Histogram
+            app.component.greyLevelHistogrammenu = uimenu(app.component.greyLevelIllustractionmenu);
+            app.component.greyLevelHistogrammenu.Text = 'Histogram';
+            app.component.greyLevelHistogrammenu.MenuSelectedFcn =createCallbackFcn(app, @greyLevelillustration, true);
+
+            % Temporal evolution
+            app.component.greyLevelTemporalevolutionmenu = uimenu(app.component.greyLevelIllustractionmenu);
+            app.component.greyLevelTemporalevolutionmenu.Text = 'Temporal evolution';
+            app.component.greyLevelTemporalevolutionmenu.MenuSelectedFcn =createCallbackFcn(app, @greyLevelillustration, true);
+
 
             %%  MenuBar --> SWE
             app.component.SWEmenu = uimenu(app.component.figure);
             app.component.SWEmenu.Text = 'SWE';
-                % Set Up SWE
-                app.component.SetUpSWEmenu = uimenu(app.component.SWEmenu);
-                app.component.SetUpSWEmenu.Text = 'Set SWE';
-                    % Set Up SWE Color Scale Value
-                    app.component.CalibrationSWEmenu = uimenu(app.component.SetUpSWEmenu);
-                    app.component.CalibrationSWEmenu.Text = 'Set color scale';
-                    app.component.CalibrationSWEmenu.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
 
-                      % Set Up SWE Color Scale
-                    app.component.CalibrationSWEmenu1 = uimenu(app.component.SetUpSWEmenu);
-                    app.component.CalibrationSWEmenu1.Text = 'Set color scale value';
-                    app.component.CalibrationSWEmenu1.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
-                  
-                    % Set Up SWE framerate
-                    app.component.FramerateSWEmenu= uimenu(app.component.SetUpSWEmenu);
-                    app.component.FramerateSWEmenu.Text = 'Set framerate';
-                    app.component.FramerateSWEmenu.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
+            % Set Up SWE
+            app.component.SetUpSWEmenu = uimenu(app.component.SWEmenu);
+            app.component.SetUpSWEmenu.Text = 'Set SWE';
 
-                    % ShowSolorScale
-                    app.component.ShowSolorScalemenu = uimenu(app.component.SetUpSWEmenu);
-                    app.component.ShowSolorScalemenu.Text = 'Show color scale';
-                    app.component.ShowSolorScalemenu.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
-                
-                 % Set Up SWE
-                app.component.SetUpShapemenu = uimenu(app.component.SWEmenu);
-                app.component.SetUpShapemenu.Text = 'Set Shape';
-                    % Set Up Square
-                    app.component.ShapeSquaremenu = uimenu(app.component.SetUpShapemenu);
-                    app.component.ShapeSquaremenu.Text = 'Square shape';
-                    app.component.ShapeSquaremenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
-                    % Set Up Custum
-                    app.component.ShapeCustummenu = uimenu(app.component.SetUpShapemenu);
-                    app.component.ShapeCustummenu.Text = 'Custum shape';
-                    app.component.ShapeCustummenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
-                    % Set Up auto 1cm2
-                    app.component.ShapeAutomenu = uimenu(app.component.SetUpShapemenu);
-                    app.component.ShapeAutomenu.Text = 'Auto shape';
-                    app.component.ShapeAutomenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
-                    % Set Up 1cm2 square
-                    app.component.ShapeSquare1cm2menu = uimenu(app.component.SetUpShapemenu);
-                    app.component.ShapeSquare1cm2menu.Text = 'Square 1cm^2 shape';
-                    app.component.ShapeSquare1cm2menu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
-                    % Set Up all
-                    app.component.ShapeAllmenu = uimenu(app.component.SetUpShapemenu);
-                    app.component.ShapeAllmenu.Text = 'All color map';
-                    app.component.ShapeAllmenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+            % Set Up SWE Color Scale Value
+            app.component.CalibrationSWEmenu = uimenu(app.component.SetUpSWEmenu);
+            app.component.CalibrationSWEmenu.Text = 'Set color scale';
+            app.component.CalibrationSWEmenu.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
 
-                % Calcualtion Pipline
-                app.component.SWECaluculationmenu = uimenu(app.component.SWEmenu);
-                app.component.SWECaluculationmenu.Text = 'Start SWE calculation';
-                app.component.SWECaluculationmenu.MenuSelectedFcn =createCallbackFcn(app, @SWE_Calculation, true);
+            % Set Up SWE Color Scale
+            app.component.CalibrationSWEmenu1 = uimenu(app.component.SetUpSWEmenu);
+            app.component.CalibrationSWEmenu1.Text = 'Set color scale value';
+            app.component.CalibrationSWEmenu1.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
 
-                % SWE illustration
-                app.component.SWEIllustractionmenu = uimenu(app.component.SWEmenu);
-                app.component.SWEIllustractionmenu.Text = 'SWE illustration';
-                    % Histogram
-                    app.component.Histogrammenu = uimenu(app.component.SWEIllustractionmenu);
-                    app.component.Histogrammenu.Text = 'Histogram';
-                    app.component.Histogrammenu.MenuSelectedFcn =createCallbackFcn(app, @SWEillustration, true);
-                    % Temporal evolution
-                    app.component.Temporalevolutionmenu = uimenu(app.component.SWEIllustractionmenu);
-                    app.component.Temporalevolutionmenu.Text = 'Temporal evolution';
-                    app.component.Temporalevolutionmenu.MenuSelectedFcn =createCallbackFcn(app, @SWEillustration, true);
+            % Set Up SWE framerate
+            app.component.FramerateSWEmenu= uimenu(app.component.SetUpSWEmenu);
+            app.component.FramerateSWEmenu.Text = 'Set framerate';
+            app.component.FramerateSWEmenu.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
 
-                    
+            % ShowSolorScale
+            app.component.ShowSolorScalemenu = uimenu(app.component.SetUpSWEmenu);
+            app.component.ShowSolorScalemenu.Text = 'Show color scale';
+            app.component.ShowSolorScalemenu.MenuSelectedFcn =createCallbackFcn(app, @SWESetUp, true);
+
+            % Set Up SWE
+            app.component.SetUpShapemenu = uimenu(app.component.SWEmenu);
+            app.component.SetUpShapemenu.Text = 'Set Shape';
+
+            % Set Up Square
+            app.component.ShapeSquaremenu = uimenu(app.component.SetUpShapemenu);
+            app.component.ShapeSquaremenu.Text = 'Square shape';
+            app.component.ShapeSquaremenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+
+            % Set Up Custum
+            app.component.ShapeCustummenu = uimenu(app.component.SetUpShapemenu);
+            app.component.ShapeCustummenu.Text = 'Custum shape';
+            app.component.ShapeCustummenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+
+            % Set Up auto 1cm2
+            app.component.ShapeAutomenu = uimenu(app.component.SetUpShapemenu);
+            app.component.ShapeAutomenu.Text = 'Auto shape';
+            app.component.ShapeAutomenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+
+            % Set Up 1cm2 square
+            app.component.ShapeSquare1cm2menu = uimenu(app.component.SetUpShapemenu);
+            app.component.ShapeSquare1cm2menu.Text = 'Square 1cm^2 shape';
+            app.component.ShapeSquare1cm2menu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+
+            % Set Up all
+            app.component.ShapeAllmenu = uimenu(app.component.SetUpShapemenu);
+            app.component.ShapeAllmenu.Text = 'All color map';
+            app.component.ShapeAllmenu.MenuSelectedFcn =createCallbackFcn(app, @setShape, true);
+
+            % Calcualtion Pipline
+            app.component.SWECaluculationmenu = uimenu(app.component.SWEmenu);
+            app.component.SWECaluculationmenu.Text = 'Start SWE calculation';
+            app.component.SWECaluculationmenu.MenuSelectedFcn =createCallbackFcn(app, @SWE_Calculation, true);
+
+            % SWE illustration
+            app.component.SWEIllustractionmenu = uimenu(app.component.SWEmenu);
+            app.component.SWEIllustractionmenu.Text = 'SWE illustration';
+
+            % Histogram
+            app.component.Histogrammenu = uimenu(app.component.SWEIllustractionmenu);
+            app.component.Histogrammenu.Text = 'Histogram';
+            app.component.Histogrammenu.MenuSelectedFcn =createCallbackFcn(app, @SWEillustration, true);
+
+            % Temporal evolution
+            app.component.Temporalevolutionmenu = uimenu(app.component.SWEIllustractionmenu);
+            app.component.Temporalevolutionmenu.Text = 'Temporal evolution';
+            app.component.Temporalevolutionmenu.MenuSelectedFcn =createCallbackFcn(app, @SWEillustration, true);
+
+
             %% MenuBar --> Help
             app.component.Helpmenu = uimenu(app.component.figure);
             app.component.Helpmenu.Text = 'Help';
@@ -322,17 +387,17 @@ classdef App_Echo < matlab.apps.AppBase
             displayFrame(app)
             app.component.Slider.Value = (app.variables.frameindex/ app.video(app.variables.videoindex).videoObject.NumFrames) * app.video(app.variables.videoindex).videoObject.Duration ;
         end
- 
+
         %% displayFrame (ok)
         function displayFrame(app)
             currentFrame = app.variables.frameindex;
             cla(app.component.Axes)
             image(app.component.Axes,app.video(app.variables.videoindex).frame{currentFrame});
             hold(app.component.Axes,'on')
-           
+
 
             if ~isempty(app.video(app.variables.videoindex).memory_tracking)
-                % tracking point 
+                % tracking point
                 try
                     for ii = 1 : size(app.video(app.variables.videoindex).memory_tracking.mkrTracked,2)
                         plot(app.component.Axes, ...
@@ -345,7 +410,7 @@ classdef App_Echo < matlab.apps.AppBase
                 catch
                 end
 
-                % linear function 
+                % linear function
 
             end
         end
@@ -356,8 +421,8 @@ classdef App_Echo < matlab.apps.AppBase
             SetApp(app);
         end
 
-            %% Menu bar callbacks
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %% Menu bar callbacks
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% loadfiles (ok)
         function loadfiles(app,~)
             app.video = [] ;
@@ -371,6 +436,7 @@ classdef App_Echo < matlab.apps.AppBase
                 for i = 1 : length(app.video)
                     app.video(i).memory_tracking = [];
                     app.video(i).memory_SWE = [];
+                    app.video(i).memory_grey_level = [];
                     app.video(i).memory_processing = [];
                 end
 
@@ -400,35 +466,71 @@ classdef App_Echo < matlab.apps.AppBase
 
         %% export (ok)
         function export(app,~)
-            nVideo = size(app.video,2);             
-            %% export for SWE 
+            nVideo = size(app.video,2);
+            %% export for SWE
             %%%%%%%%%%%%%%%%%%
             cd(app.general.path.General)
             for i= 1 : nVideo
                 saveName  = string([app.video(i).name(1:end-4),'_results.mat']) ;
-                swe = []; tracking = [];
+                swe = []; tracking = []; grey_level = [];
                 if ~isempty(app.video(i).memory_SWE)
                     swe = app.video(i).memory_SWE;
                 end
                 if ~isempty(app.video(i).memory_tracking)
                     tracking = app.video(i).memory_tracking;
                 end
-                save(saveName,"swe","tracking",'-mat')
+                if ~isempty(app.video(i).memory_grey_level)
+                    grey_level = app.video(i).memory_grey_level;
+                end
+
+                save(saveName,"swe","tracking","grey_level",'-mat')
+            end
+            cd(app.general.path.App)
+        end
+
+        %% export scaling
+        function exportscaling(app,~)
+            nVideo = size(app.video,2);
+            %% export prescale
+            %%%%%%%%%%%%%%%%%%
+            cd(app.general.path.General)
+            for i = 1 : nVideo
+                preScale = [];
+                saveName  = string([app.video(i).name(1:end-4),'.mat']) ;
+
+                preScale.name = app.video(i).name;
+                preScale.path = app.video(i).path;
+
+                preScale.time.Bmode = app.video(i).time.Bmode;
+                preScale.coef.x = app.video(i).coef.x; % col factor
+                preScale.coef.y = app.video(i).coef.y; % row factor
+
+                try
+                    preScale.time.SWE = app.video(i).time.SWE;
+                    preScale.time.SWindex = app.video(i).time.SWindex;
+                    preScale.colorScale.colorScaleRGBuint8 = app.video(i).colorScale.colorScaleRGBuint8;
+                    preScale.colorScale.colorScaleRGBdouble = app.video(i).colorScale.colorScaleRGBdouble;
+                    preScale.colorScale.colorScaleValue = app.video(i).colorScale.colorScaleValue;
+
+                catch M
+                    preScale.colorScale = "None";
+                end
+                save(saveName,"preScale",'-mat')
             end
             cd(app.general.path.App)
         end
 
         %% setShape
         function setShape(app,event)
-            if isempty (app.video(app.variables.videoindex).colorScale) % no video import / impossible 
-                errordlg('You have to import video before','unavailable process')                
+            if isempty (app.video(app.variables.videoindex).colorScale) % no video import / impossible
+                errordlg('You have to import video before','unavailable process')
             else
                 if string(event.Source.Text)  == "Custum shape"
-                     Shape = app.general.fun.setCustumShape(app.video(app.variables.videoindex).frame{1});
-                     app.video(app.variables.videoindex).Shape = Shape;
+                    Shape = app.general.fun.setCustumShape(app.video(app.variables.videoindex).frame{1});
+                    app.video(app.variables.videoindex).Shape = Shape;
                 elseif string(event.Source.Text)  == "Square shape"
-                     Shape = app.general.fun.setSquareShape(app.video(app.variables.videoindex).frame{1});
-                     app.video(app.variables.videoindex).Shape = Shape;
+                    Shape = app.general.fun.setSquareShape(app.video(app.variables.videoindex).frame{1});
+                    app.video(app.variables.videoindex).Shape = Shape;
                 elseif string(event.Source.Text)  == "Auto shape"
                     Shape = app.general.fun.autoShape(app.video(app.variables.videoindex).frame{1},app.video(app.variables.videoindex).coef);
                     app.video(app.variables.videoindex).Shape = Shape;
@@ -444,45 +546,66 @@ classdef App_Echo < matlab.apps.AppBase
                 end
             end
         end
-        
+
+
+        %% setZoneOfInterestBmode
+        function setZoneOfInterestBmode(app,event)
+            if isempty(app.video) % no video import / impossible
+                errordlg('You have to import video before','unavailable process')
+            else
+                if string(event.Source.Text)  == "Custum zone of interest"
+                    Shape = app.general.fun.setCustumShape(app.video(app.variables.videoindex).frame{1});
+                    app.video(app.variables.videoindex).ZoneOfInterestBmode = Shape;
+                elseif string(event.Source.Text)  == "Square zone of interest"
+                    Shape = app.general.fun.setSquareShape(app.video(app.variables.videoindex).frame{1});
+                    app.video(app.variables.videoindex).ZoneOfInterestBmode = Shape;
+                elseif string(event.Source.Text)  == "Square 1cm^2 zone of interest"
+                    Shape = app.general.fun.setSquareShapeCm(app.video(app.variables.videoindex).frame{1},app.video(app.variables.videoindex).coef,1);
+                    app.video(app.variables.videoindex).ZoneOfInterestBmode = Shape;
+                    app.general.fun.displayShape(app.video(app.variables.videoindex).frame{1},Shape)
+                end
+            end
+        end
+
         %% SetUpBMode (OK)
         function SetUpBMode(app,~)
-            if isempty (app.video) % no video import / impossible 
-                errordlg('You have to import video before','unavailable process')                
-            else 
+            if isempty (app.video) % no video import / impossible
+                errordlg('You have to import video before','unavailable process')
+            else
                 [coef_x,coef_y] = app.general.fun.scaleImage(app.video(app.variables.videoindex).frame);
-                app.video(app.variables.videoindex).coef.x = coef_x; 
+                app.video(app.variables.videoindex).coef.x = coef_x;
                 app.video(app.variables.videoindex).coef.y = coef_y;
-                app.video(app.variables.videoindex).memory_tracking = []; 
-                app.video(app.variables.videoindex).memory_SWE = []; 
+                app.video(app.variables.videoindex).memory_tracking = [];
+                app.video(app.variables.videoindex).memory_SWE = [];
+                app.video(app.variables.videoindex).memory_grey_level = [];
                 app.video(app.variables.videoindex).memory_processing = [] ;
-            end 
+            end
         end
 
         %% Tracking_point (ok)
         function Tracking_point(app,event)
             try
-            nbmkr = length(app.video(app.variables.videoindex).memory_tracking) ;
-            nbmkr = nbmkr+1;
+                nbmkr = length(app.video(app.variables.videoindex).memory_tracking) ;
+                nbmkr = nbmkr+1;
 
-            if string(event.Source.Text)  == "Manual"
-                [rateOfChange] =  setRateOfChange(app.video(app.variables.videoindex).videoObject.NumFrames);
-                [row_,col_] = app.general.fun.manualTracking(app.video(app.variables.videoindex).frame,rateOfChange);
-            elseif string(event.Source.Text)  == "Semi automatic"
-                [row_,col_] = app.general.fun.uiTracking(app.video(app.variables.videoindex).frame);
-            end
+                if string(event.Source.Text)  == "Manual"
+                    [rateOfChange] =  setRateOfChange(app.video(app.variables.videoindex).videoObject.NumFrames);
+                    [row_,col_] = app.general.fun.manualTracking(app.video(app.variables.videoindex).frame,rateOfChange);
+                elseif string(event.Source.Text)  == "Semi automatic"
+                    [row_,col_] = app.general.fun.uiTracking(app.video(app.variables.videoindex).frame);
+                end
 
-            %% add to memory
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).y=row_ .* app.video(app.variables.videoindex).coef.y;
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).x=col_ .* app.video(app.variables.videoindex).coef.x;
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
-            app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8; 
+                %% add to memory
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).y=row_ .* app.video(app.variables.videoindex).coef.y;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).x=col_ .* app.video(app.variables.videoindex).coef.x;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8;
             catch
                 errordlg('You have to import video first','error')
-            end 
+            end
         end
 
         %% function Pipline
@@ -492,7 +615,7 @@ classdef App_Echo < matlab.apps.AppBase
             else
                 if string(event.Source.Text)  == "Structure"
                     disp('L 478')
-                    
+
                     app.general.fun.structure(app.video,app.variables.videoindex)
                 end
             end
@@ -500,14 +623,14 @@ classdef App_Echo < matlab.apps.AppBase
         %% SWESetUp
         function SWESetUp(app,event)
             try
-                
+
                 if isempty(app.video(app.variables.videoindex).colorScale)
                     errordlg('Video selected must contain SWE')
                 else
-                    if string(event.Source.Text)  == "Set color scale" 
+                    if string(event.Source.Text)  == "Set color scale"
                         disp(' Tu dois le refaire - ligne 510 function "pipline"')
-%                         temp = app.general.fun.SetManualColorScale(app.video, app.variables.videoindex); 
-%                         app.video(app.variables.videoindex) =temp(app.variables.videoindex);
+                        %                         temp = app.general.fun.SetManualColorScale(app.video, app.variables.videoindex);
+                        %                         app.video(app.variables.videoindex) =temp(app.variables.videoindex);
 
                     elseif string(event.Source.Text)  == "Set color scale value"
                         [colorScaleValue] = app.general.fun.setColorscaleValue(app.video(app.variables.videoindex).colorScale.colorScaleRGBuint8,...
@@ -526,7 +649,7 @@ classdef App_Echo < matlab.apps.AppBase
                     end
                 end
             catch
-                errordlg('Import Video first')     
+                errordlg('Import Video first')
             end
         end
 
@@ -547,7 +670,7 @@ classdef App_Echo < matlab.apps.AppBase
                 errordlg('Video selected must contain SWE and shape must be set')
             end
         end
-        
+
         %% SWEillustration
         function SWEillustration(app,event)
             try
@@ -566,8 +689,46 @@ classdef App_Echo < matlab.apps.AppBase
                 errordlg('Caluclaton process of SWE is not done yet')
             end
         end
+
+
+        %% Grey_Level_Calculation
+        function Grey_Level_Calculation(app,~)
+            try
+                results = app.general.fun.greyCalculation(app.video(app.variables.videoindex).frame, ...
+                    1 : app.video(app.variables.videoindex).videoObject.NumFrames, ...
+                    app.video(app.variables.videoindex).coef, ...
+                    app.video(app.variables.videoindex).ZoneOfInterestBmode,...
+                    app.video(app.variables.videoindex).time.Bmode);
+
+                results.time = app.video(app.variables.videoindex).time.Bmode;
+                app.video(app.variables.videoindex).memory_grey_level = results;
+            catch
+                errordlg('Video selected must contain SWE and shape must be set')
+            end
+        end
+
+        %% greyLevelillustration
+        function greyLevelillustration(app,event)
+            try
+                isempty(app.video(app.variables.videoindex).memory_grey_level); % SWE?
+                % action Set frame rate
+
+                if string(event.Source.Text)  == "Histogram"
+                    app.general.fun.figureFrameGreyHistogram(1,app.video(app.variables.videoindex).memory_grey_level)
+                elseif string(event.Source.Text)  == "Temporal evolution"
+                    app.general.fun.figureGreyTemporalEvolution(app.video(app.variables.videoindex).memory_grey_level)
+
+                end
+            catch
+                errordlg('Caluclaton process of SWE is not done yet')
+            end
+        end
+
     end
-     
+
+
+
+
     %% App creation and deletion (ok)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods (Access = public)

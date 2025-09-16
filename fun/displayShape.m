@@ -1,4 +1,8 @@
 function displayShape(selected_frame,Shape,brightness)
+    if nargin<3
+        brightness = 0.1;
+    end
+
     % Create a 3D mask by replicating the inShape matrix across the third dimension
     mask = repmat(Shape, [1, 1, 3]);
 
