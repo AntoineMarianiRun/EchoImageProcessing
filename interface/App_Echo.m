@@ -72,16 +72,20 @@ classdef App_Echo < matlab.apps.AppBase
             app.component.Piplinemenu = uimenu(app.component.Bmodemenu);
             app.component.Piplinemenu.Text = 'Pipline';
 
-            % set SWE Frame rate  (SWEFramerate
+            % set mkrOptions
+            app.component.mkrOptionsmenu = uimenu(app.component.TrackinPointgmenu);
+            app.component.mkrOptionsmenu.Text = 'markers options';
+            app.component.mkrOptionsmenu.MenuSelectedFcn =createCallbackFcn(app, @mkrOptions, true);
 
-            app.component.SWEFrameratemenu = uimenu(app.component.Piplinemenu);
-            app.component.SWEFrameratemenu.Text = 'Angle';
-            app.component.SWEFrameratemenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
+            % delete markers
+            app.component.mkrDeletemenu = uimenu(app.component.TrackinPointgmenu);
+            app.component.mkrDeletemenu.Text = 'markers delete';
+            app.component.mkrDeletemenu.MenuSelectedFcn =createCallbackFcn(app, @mkrDelete, true);
 
-            % calculation SWE (SWEcalculation)
-            app.component.SWEcalculationmenu = uimenu(app.component.Piplinemenu);
-            app.component.SWEcalculationmenu.Text = 'Structure';
-            app.component.SWEcalculationmenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
+            % % calculation SWE (SWEcalculation)
+            % app.component.SWEcalculationmenu = uimenu(app.component.Piplinemenu);
+            % app.component.SWEcalculationmenu.Text = 'Structure';
+            % app.component.SWEcalculationmenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
 
             % Tracking filter
             app.component.TrackingFiltermenu = uimenu(app.component.Bmodemenu);
@@ -406,6 +410,14 @@ classdef App_Echo < matlab.apps.AppBase
                             'Color',app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).color, ...
                             'Marker',app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).marker,...
                             'MarkerSize',app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).markerSize)
+                        text(app.component.Axes,...
+                            app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).col(currentFrame), ...
+                            app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).row(currentFrame)-30, ...
+                            app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).mkrName,...
+                            'Color',app.video(app.variables.videoindex).memory_tracking.mkrTracked(ii).color,...
+                            'FontSize',16,...
+                            'HorizontalAlignment','left',...
+                            'FontWeight','bold')
                     end
                 catch
                 end
@@ -522,7 +534,7 @@ classdef App_Echo < matlab.apps.AppBase
                 catch M
                     preScale.zoneOfInterestBMode = "None";
                 end
-                
+
                 % about zone of interest swe
                 try
                     preScale.zoneOfInterestSWE = app.video(i).Shape;
@@ -600,9 +612,13 @@ classdef App_Echo < matlab.apps.AppBase
         %% Tracking_point (ok)
         function Tracking_point(app,event)
             try
-                nbmkr = length(app.video(app.variables.videoindex).memory_tracking) ;
+                nbmkr = size(app.video(app.variables.videoindex).memory_tracking.mkrTracked,2) ;
                 nbmkr = nbmkr+1;
+            catch
+                nbmkr = 1;
+            end
 
+            try
                 if string(event.Source.Text)  == "Manual"
                     [rateOfChange] =  setRateOfChange(app.video(app.variables.videoindex).videoObject.NumFrames);
                     [row_,col_] = app.general.fun.manualTracking(app.video(app.variables.videoindex).frame,rateOfChange);
@@ -618,23 +634,53 @@ classdef App_Echo < matlab.apps.AppBase
                 app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
                 app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
                 app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8;
+                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).mkrName=['no name ',num2str(nbmkr)];
             catch
                 errordlg('You have to import video first','error')
             end
         end
 
+        %% mkrOptions
+        function mkrOptions(app,~)
+            if isempty(app.video)
+                errordlg('You have to import a video before', 'Error')
+            else
+                if isempty(app.video(app.variables.videoindex).memory_tracking) % is there a r a video selected
+                    errordlg('You have to track markers before a video before', 'Error')
+                else
+                    app.video(app.variables.videoindex).memory_tracking = app.general.fun.editMarker(app.video(app.variables.videoindex).memory_tracking);
+                end
+            end
+        end
+
+                %% mkrOptions
+        function mkrDelete(app,~)
+            if isempty(app.video)
+                errordlg('You have to import a video before', 'Error')
+            else
+                if isempty(app.video(app.variables.videoindex).memory_tracking) % is there a r a video selected
+                    errordlg('You have to track markers before a video before', 'Error')
+                else
+                    app.video(app.variables.videoindex).memory_tracking = app.general.fun.deleteMarker(app.video(app.variables.videoindex).memory_tracking);
+                end
+            end
+        end
         %% function Pipline
         function Pipline(app,event)
-            if isempty(app.video) % is there a r a video selected
+            if isempty(app.video(app.variables.videoindex).memory_tracking) % is there a r a video selected
                 errordlg('You have to import a video before', 'Error')
             else
                 if string(event.Source.Text)  == "Structure"
                     disp('L 478')
 
                     app.general.fun.structure(app.video,app.variables.videoindex)
+
+                elseif string(event.Source.Text)  == "Angle"
+                    app.video(app.variables.videoindex).memory_tracking
                 end
             end
         end
+
         %% SWESetUp
         function SWESetUp(app,event)
             try
