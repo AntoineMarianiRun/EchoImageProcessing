@@ -3,6 +3,20 @@
 %% select echo video
 video =  uiGetVideo();                                                     % get video and video information
 videoIndex = 1;                                                            % first video selected 
+frameIndex = 1; % first frame to set the shape 
+
+selected_frame = video(videoIndex).frame{1};                               % first frame of the video 
+
+%% improve video quality for tracking
+coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
+video(videoIndex).frame_improved = enhanceFrames(video(videoIndex).frame,coord);
+
+frameRead(video(videoIndex).frame,frameIndex)
+frameRead(video(videoIndex).frame_improved,frameIndex)
+
+%%
+video(videoIndex).frame = video(videoIndex).frame_improved;
+
 selected_frame = video(videoIndex).frame{1};                               % first frame of the video 
 
 %% set a template
@@ -49,7 +63,7 @@ rateOfChange = 10;                                                         % Rat
 opts.showHeatMap = "off";
 opts.showTemplate = "off";
 opts.progressBar = "off";
-opts.maxError =  0.05; 
+opts.maxError =  0.20; 
 opts.rateOfDisplay = 10;
 
 [row,col,minValue] = tracking(frames, ...
@@ -72,7 +86,7 @@ videoTrackingRead(frames, video.videoObject,exTracked)                     % sho
 
 %% test ui interface tracking 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[row_,col_] = uiTracking(video(videoIndex).frame);
+%[row_,col_] = uiTracking(video(videoIndex).frame);
 
 
 %% manual tracking 
@@ -82,7 +96,7 @@ rateOfChange = 24;                                                         % set
 [row_,col_]= manualTracking(frames,24); 
 
 
-%% 3/  Muscle architecture exemple
+%% 3/  Muscle architecture exemple % error in fiber muscle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 3.1. set two markers for deep apponevroses, surface apponevroses and
     % muscle fiber
@@ -123,18 +137,18 @@ surfaceApponevroses_2.template = corpImageAsRectangle(selected_frame, ...
     heigthBox, ...
     widthBox);
 
-% 3.1.3 Muscle fiber 
+% 3.1.3 Muscle fiber % change hear
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-muscleFibers_1.X = 551;
-muscleFibers_1.Y = 390;
+muscleFibers_1.X = 565;
+muscleFibers_1.Y = 394;
 muscleFibers_1.template = corpImageAsRectangle(selected_frame, ...
     muscleFibers_1.X, ...
     muscleFibers_1.Y, ...
     51, ...
     51);
 
-muscleFibers_2.X = 851;
-muscleFibers_2.Y = 453;
+muscleFibers_2.X = 915;
+muscleFibers_2.Y = 469;
 muscleFibers_2.template = corpImageAsRectangle(selected_frame, ...
     muscleFibers_2.X, ...
     muscleFibers_2.Y, ...
@@ -319,7 +333,7 @@ funTracked(3).limInf = min([intersect_1.col;intersect_2.col]);
 funTracked(3).limSup = max([intersect_1.col;intersect_2.col]);
 funTracked(3).color='r';
 funTracked(3).lineStyle='-';
-funTracked(3).lineWidth=2;
+funTracked(3).lineWidth=1.5;
 
 videoTrackingRead(frames, video.videoObject,mkrTracked,funTracked)
 
@@ -335,11 +349,51 @@ videoTrackingRead(frames, video.videoObject,mkrTracked,funTracked)
     intersect_2.xPosition,...
     intersect_2.yPosition);
 
+pennationAngle = angleBetweenLines([muscleFibers_fun.a],[deepApponevroses_fun.a]);
+pennationAngle2 = angleBetweenLines([muscleFibers_fun.a],[surfaceApponevroses_fun.a]);
+
+%% illustration 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure 
-plot(video(videoIndex).time.Bmode,fiberLength)
-xlabel('Time (s)')
-ylabel('Fiber length (cm)')
+subplot(1,2,1)
+plot(video(videoIndex).time.Bmode,fiberLength,'.-r')
+xlim([min(video(videoIndex).time.Bmode) max(video(videoIndex).time.Bmode)])
+xlabel('Time (s)','FontWeight','bold')
+ylabel('Fiber length (cm)','FontWeight','bold')
 
+subplot(1,2,2)
+plot(video(videoIndex).time.Bmode,pennationAngle,'.-k')
+hold on
+plot(video(videoIndex).time.Bmode,pennationAngle2,'.-b')
+xlim([min(video(videoIndex).time.Bmode) max(video(videoIndex).time.Bmode)])
+xlabel('Time (s)','FontWeight','bold')
+ylabel('penation angle (deg)','FontWeight','bold')
+legend('deep apponevroses','surface apponevroses')
 
+figure
+plot(fiberLength,pennationAngle,'.-r')
+xlim([min(fiberLength) max(fiberLength)])
+xlabel('penation angle (deg)','FontWeight','bold')
+ylabel('Fiber length (cm)','FontWeight','bold')
+
+figure
+plot(pennationAngle2,pennationAngle,'.-k')
+
+%%
+figure 
+subplot(1,2,1)
+plot(video(videoIndex).time.Bmode,smooth(fiberLength),'.-r')
+xlim([min(video(videoIndex).time.Bmode) max(video(videoIndex).time.Bmode)])
+xlabel('Time (s)','FontWeight','bold')
+ylabel('Fiber length (cm)','FontWeight','bold')
+
+subplot(1,2,2)
+plot(video(videoIndex).time.Bmode,smooth(pennationAngle),'.-k')
+hold on
+plot(video(videoIndex).time.Bmode,smooth(pennationAngle2),'.-b')
+xlim([min(video(videoIndex).time.Bmode) max(video(videoIndex).time.Bmode)])
+xlabel('Time (s)','FontWeight','bold')
+ylabel('penation angle (deg)','FontWeight','bold')
+legend('deep apponevroses','surface apponevroses')
 
 
