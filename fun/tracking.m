@@ -26,9 +26,6 @@ end
 
 figTracking = figure('Name','Show tracking','Color',[1 1 1]);
 
-
-
-
 compt = 1;
 nbFrames = numel(frames);
 method = "Crop";
@@ -169,6 +166,8 @@ if opts.progressBar == "on"
     fig.WindowStyle ="normal";
     close(fig)
 end
+
+close(figTracking)
 
 end
 

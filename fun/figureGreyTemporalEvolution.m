@@ -11,7 +11,7 @@ figure("Name","Temporal evolution of SWE","Color",[1 1 1],"MenuBar","none","Tool
 % First subplot: Mean and Standard Deviation
 subplot(3,1,[1 2]);
 errorbar(time(results.frameIndex),mean_Grey(results.frameIndex),std_Grey(results.frameIndex),'-x','Color','r')
-ylabel('grey level (u.a.)','FontWeight','bold');
+ylabel('grey level (dim.less)','FontWeight','bold');
 title('Temporal Evolution of Grey');
 legend('Mean  +/- Std');
 xlim([0 max(time)])

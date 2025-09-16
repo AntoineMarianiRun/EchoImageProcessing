@@ -14,10 +14,14 @@ function global_frames = enhanceFrames(frames, ROI)
 
 if length(ROI.x) == 2
     ROI.x = ROI.x(1):ROI.x(2);
+else
+    ROI.x = 1
 end 
 
 if length(ROI.y) == 2
     ROI.y = ROI.y(1):ROI.y(2);
+else
+    ROI.y = 12
 end 
 
 

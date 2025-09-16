@@ -1,4 +1,4 @@
-function [SWE] = VS2SM(Vs,structure)
+function [shear_modulus] = VS2SM(Vs,structure)
 % Vs2SWE calculate the ShearWave moduli (u)
 % according to the following equation
 % u = rho * Vs.^2
@@ -33,6 +33,6 @@ else
     error("seconde input must be : 'muscle', 'tendinus' or 'aponevrosis'")
 end
 
-SWE = rho .* (Vs.^2) ;
+shear_modulus = rho .* (Vs.^2) ;
 %fprintf(['the medium is a : ', char(structure), '; with a density of : ', num2str(rho), 'kg/m^3 \n'])
 end

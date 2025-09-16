@@ -13,10 +13,10 @@ end
 [Maxvalue] = scaleSWEValue(colorScaleRGBuint8,txt);
 
 if txt == "kPa"
-    colorScaleValue = linspace(0,Maxvalue,length(colorScaleRGBdouble));
+    colorScaleValue = linspace(0,Maxvalue/3,length(colorScaleRGBdouble)); % from young modulus (E) to shear modulus (μ)
 elseif txt == "m/s"
-    colorScaleValue_ms = sqrt(linspace(0,Maxvalue^2,length(colorScaleRGBdouble)));% no linearity of the scale 
-    colorScaleValue = VS2SM(colorScaleValue_ms);
-    colorScaleValue = colorScaleValue./1000;
+    colorScaleValue_ms = sqrt(linspace(0,Maxvalue^2,length(colorScaleRGBdouble)));% no linearity of the scale (μ)
+    colorScaleValue = VS2SM(colorScaleValue_ms); % in Pa
+    colorScaleValue = colorScaleValue./1000;  % in kPa
 end
 end

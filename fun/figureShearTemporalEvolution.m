@@ -1,8 +1,8 @@
 function figureShearTemporalEvolution(results)
 % Sample data
 time = results.time; % Time vector
-mean_SWE = results.meanValue; % Sample mean data
-std_SWE = results.stdValue; % Sample standard deviation data
+mean_SWE = results.meanValueShearModulus; % Sample mean data
+std_SWE = results.stdValueShearModulus; % Sample standard deviation data
 void = results.voidPercent; % Sample value data
 
 % Create figure

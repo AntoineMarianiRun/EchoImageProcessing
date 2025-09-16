@@ -7,14 +7,10 @@ video =  uiGetVideo();
 videoIndex = 1; % first video import
 frameIndex = 1; % first frame to set the shape 
 
-%% improve video quality for tracking
-coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
-video(videoIndex).frame_improved = enhanceFrames(video(videoIndex).frame,coord);
 %% read the video
 videoRead(video(videoIndex).frame,video(videoIndex).videoObject)           % read the video 
-videoRead(video(videoIndex).frame_improved,video(videoIndex).videoObject)           % read the video 
 
-% frameRead(video(videoIndex).frame,frameIndex)                              % show a sigle frame
+frameRead(video(videoIndex).frame,frameIndex)                              % show a sigle frame
 
 %% show colorscale 
 ShowColorScale(video(videoIndex).colorScale.colorScaleRGBuint8, ...
@@ -46,8 +42,8 @@ results = colorCalculation(video(videoIndex).frame,...                     % fra
 figureShearTemporalEvolution(results)
 
 % interestion value of an image
-% sweFrameIndex = 6;
-% figureFrameColorHistogram(video,videoIndex,sweFrameIndex,results)
+sweFrameIndex = 2;
+figureFrameColorHistogram(video,videoIndex,sweFrameIndex,results)
 
 %% save 
 currentForder = cd;                                                        % current forlder 
@@ -61,7 +57,7 @@ disp(['results : ' , saveName,' is save in ', video(videoIndex).videoObject.Path
 %% compare each pixel contains in the shape (for each Bmode image) to a grey scale 
 Shape = setSquareShape(video(videoIndex).frame{frameIndex});               % as a square 
 
-frameindex = 1 : video(videoIndex).videoObject.NumFrames;
+frameindex = video(videoIndex).time.SWindex;                               % frameindex = 1 : video(videoIndex).videoObject.NumFrames;
 
 [results] = greyCalculation(video(videoIndex).frame, ...
     frameindex, ...
@@ -71,4 +67,4 @@ frameindex = 1 : video(videoIndex).videoObject.NumFrames;
 
 figureFrameGreyHistogram(1,results)
 
-figureShearTemporalEvolution(results)
+figureGreyTemporalEvolution(results)
