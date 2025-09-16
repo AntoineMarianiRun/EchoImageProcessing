@@ -515,6 +515,21 @@ classdef App_Echo < matlab.apps.AppBase
                 catch M
                     preScale.colorScale = "None";
                 end
+
+                % about zone of interest Bmode
+                try
+                    preScale.zoneOfInterestBMode = app.video(i).ZoneOfInterestBmode;
+                catch M
+                    preScale.zoneOfInterestBMode = "None";
+                end
+                
+                % about zone of interest swe
+                try
+                    preScale.zoneOfInterestSWE = app.video(i).Shape;
+                catch M
+                    preScale.zoneOfInterestSWE = "None";
+                end
+                % save
                 save(saveName,"preScale",'-mat')
             end
             cd(app.general.path.App)
