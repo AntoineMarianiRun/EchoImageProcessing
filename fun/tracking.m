@@ -28,7 +28,9 @@ figTracking = figure('Name','Show tracking','Color',[1 1 1]);
 
 compt = 1;
 nbFrames = numel(frames);
-method = "Crop";
+% method = "Crop";
+method = "rmse";
+
     % size of the zone of interest
 nTemplateRow = size(template,1);
 nTemplateCol = size(template,2);
@@ -64,7 +66,9 @@ for currentFrame = 1 : nbFrames
             row(currentFrame-1), ...                                             % previous position
             heigthBox,widthBox);                                               % zone of intest size
     end
-    errMatrix = compareImage2Pattern(currentZoneOfInterest,template,method);        % pattern matching 
+    % errMatrix = compareImage2Pattern(currentZoneOfInterest,template,method);        % pattern matching 
+    errMatrix = SDD_matching(currentZoneOfInterest,template,method);        % pattern matching
+
     [currentError,rowOffset,colOffset] = minError(errMatrix);  
 
     if currentError >  opts.maxError && currentFrame~=1

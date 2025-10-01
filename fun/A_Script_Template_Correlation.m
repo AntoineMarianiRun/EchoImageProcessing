@@ -9,13 +9,13 @@ selected_frame = video(videoIndex).frame{1};                               % fir
 
 %% improve video quality for tracking
 coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
-video(videoIndex).frame_improved = enhanceFrames(video(videoIndex).frame,coord);
+% video(videoIndex).frame_improved = enhanceFrames(video(videoIndex).frame,coord);
 
 frameRead(video(videoIndex).frame,frameIndex)
-frameRead(video(videoIndex).frame_improved,frameIndex)
+% frameRead(video(videoIndex).frame_improved,frameIndex)
 
 %%
-video(videoIndex).frame = video(videoIndex).frame_improved;
+% video(videoIndex).frame = video(videoIndex).frame_improved;
 
 selected_frame = video(videoIndex).frame{1};                               % first frame of the video 
 
@@ -37,7 +37,29 @@ widthImage = 501;
 Image_ = corpImageAsRectangle(selected_frame,X,Y,heigthImage,widthImage);  % image that you want to search on 
 
 method = "Crop";                                                           % method for image border 
+
+tic
 [errMatrix] = compareImage2Pattern(Image_,templateImage,method);           % template matching correlation 
+toc
+plotErrorMartixAndImage(errMatrix,Image_)
+mean(errMatrix,'all','omitmissing')
+
+tic
+[errMatrix] = SDD_matching(Image_,templateImage,"mean_distance");           % template matching correlation 
+toc
+x_err = mean(errMatrix,'all','omitmissing');
+plotErrorMartixAndImage(errMatrix,Image_,x_err)
+
+tic
+[errMatrix] = SDD_matching(Image_,templateImage,"rmse");           % template matching correlation 
+toc
+x_err = mean(errMatrix,'all','omitmissing');
+plotErrorMartixAndImage(errMatrix,Image_,x_err)
+
+tic
+[corrMatrix] = NCC_matching(Image_,templateImage);           % template matching correlation 
+toc
+
 
 [rowOffset,colOffset,~] = minError(errMatrix);                             % position and error 
 
@@ -45,6 +67,7 @@ method = "Crop";                                                           % met
 plotErrorMartixAndImage(errMatrix,Image_)
 plotHeatMapErrorMatrix(errMatrix)
 plot3DErrorMatrix(errMatrix)
+plot3DErrorMatrixImage(errMatrix,Image_)
 
 %% 2/ tracking process (template matching correlation on a video) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -397,3 +420,45 @@ ylabel('penation angle (deg)','FontWeight','bold')
 legend('deep apponevroses','surface apponevroses')
 
 
+%% 
+for i = 1 : size(mkrTracked,2)
+    [mkrTracked(i).x,mkrTracked(i).y] = convertPixPosition(mkrTracked(i),video(videoIndex).coef);
+end
+
+memory.mkrTracked = mkrTracked;
+memory_deepApponevroses.mkrTracked = memory.mkrTracked(1:2);
+memory_surfaceApponevroses.mkrTracked = memory.mkrTracked(5:6);
+memory_muscleFibers.mkrTracked = memory.mkrTracked(3:4);
+
+n = 1; %polynom order
+[deepApponevroses_fun] = quadraticFitting(memory_deepApponevroses,n);
+[surfaceApponevroses_fun] = quadraticFitting(memory_surfaceApponevroses,n);
+[muscleFibers_fun] = quadraticFitting(memory_muscleFibers,n);
+
+
+funTracked(1).fun = deepApponevroses_fun;
+funTracked(1).limInf = min([intersect_1.col;intersect_2.col]);
+funTracked(1).limSup = max([intersect_1.col;intersect_2.col]);
+funTracked(1).color='w';
+funTracked(1).lineStyle='-.';
+funTracked(1).lineWidth=2;
+
+funTracked(2).fun = surfaceApponevroses_fun;
+funTracked(2).limInf = min([intersect_1.col;intersect_2.col]);
+funTracked(2).limSup = max([intersect_1.col;intersect_2.col]);
+funTracked(2).color='w';
+funTracked(2).lineStyle='-.';
+funTracked(2).lineWidth=2;
+
+funTracked(3).fun = muscleFibers_fun;
+funTracked(3).limInf = min([intersect_1.col;intersect_2.col]);
+funTracked(3).limSup = max([intersect_1.col;intersect_2.col]);
+funTracked(3).color='r';
+funTracked(3).lineStyle='-';
+funTracked(3).lineWidth=1.5;
+
+videoTrackingRead(frames, video.videoObject,mkrTracked,funTracked)
+
+
+[x_intersect,y_intersect]= findIntersect(deepApponevroses_fun(1).framecm,muscleFibers_fun(1).framecm)
+theta_deg = angleBetweenFunctions(deepApponevroses_fun(1).framecm,muscleFibers_fun(1).framecm, x_intersect)
