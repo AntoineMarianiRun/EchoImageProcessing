@@ -11,8 +11,6 @@ function [row_,col_] = uiTracking(frame)
     frameIndex = 1;
     [~,nframe] = size(frame);
     [r,c,~] = size(frame{frameIndex});
-    frameIndex = 1;
-    [r, c, ~] = size(frame{frameIndex});
 
     % Tracking points initialization
     row_ = nan(1, nframe);

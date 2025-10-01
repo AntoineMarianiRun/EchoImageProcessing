@@ -1,4 +1,7 @@
-function plotErrorMartixAndImage(errMatrix,Img)
+function plotErrorMartixAndImage(errMatrix,Img,err_max)
+if nargin <3
+    err_max = 0.25;
+end
 [x, y] = meshgrid(1:size(errMatrix, 2), 1:size(errMatrix, 1)); % Créer les coordonnées X et Y
 
 
@@ -12,7 +15,7 @@ image(ax1,Img)
 mesh(x, y, errMatrix,'Parent',ax1);                              % Tracer la matrice en utilisant mesh
 
 % Ajuster l'échelle des couleurs à [0, 1]
-caxis(ax1,[0 .4]);
+clim(ax1,[0 err_max]);
 
 % Ajouter une barre de couleur pour la légende des valeurs
 colorbar(ax1);

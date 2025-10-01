@@ -1,9 +1,13 @@
-function plot3DErrorMatrix(errMatrix)
+function plot3DErrorMatrixImage(errMatrix,Img)
 % Condition pour remplacer les valeurs égales à 1 par NaN
 errMatrix(errMatrix == 1) = NaN;
 
+fig1=figure('Name','error map','Color',[1 1 1]);
+ax1 = axes('Parent',fig1);
+hold(ax1,'on');
 
-figure('Name','error map','Color',[1 1 1]);
+image(ax1,Img)
+[rowOffset,colOffset,~] = minError(errMatrix);                             % position and error 
 
 % Créer les coordonnées X et Y
 [x, y] = meshgrid(1:size(errMatrix, 2), 1:size(errMatrix, 1));

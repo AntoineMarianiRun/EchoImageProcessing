@@ -29,9 +29,10 @@ frameRate = 1 / video_object.FrameRate;
 % Loop through frames and display them
 for current_frame = 1 : 2 : video_object.NumFrames
     tic;
-
     % Display the current frame
     im = axes('Parent', fig, 'Position', [0 0 1 1]);
+    % Clear the axes for the next frame
+    cla(im);
     image(frames{current_frame}, 'Parent', im);
     set(im, 'Layer', 'top', 'XTick', [], 'YTick', []);
     hold on 
@@ -58,11 +59,8 @@ for current_frame = 1 : 2 : video_object.NumFrames
     if waitTime > 0.01
         pause(waitTime);
     end
-
-    % Clear the axes for the next frame
-    cla(im);
 end
 
 % Close the figure window after playback
-close(fig);
+% close(fig);
 end
