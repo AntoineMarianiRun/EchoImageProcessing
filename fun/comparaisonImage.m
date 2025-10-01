@@ -6,6 +6,10 @@ function [absError] =  comparaisonImage(img,template)
 % return error [0,1]
 
 absError = nan(1);                                                             % intialisation 
+if size(img,3) == 1 && size(template,3)  == 3
+    template = mean(template,3);
+end
+
 
 if size(img,1) == size(template,1) && ...
     size(img,2) == size(template,2) && ...
