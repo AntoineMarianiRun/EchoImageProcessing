@@ -68,29 +68,54 @@ classdef App_Echo < matlab.apps.AppBase
             app.component.TrackinSemiAutomaticgmenu.Text = 'Semi automatic';
             app.component.TrackinSemiAutomaticgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
 
-            % Pipline
-            app.component.Piplinemenu = uimenu(app.component.Bmodemenu);
-            app.component.Piplinemenu.Text = 'Pipline';
-
             % set mkrOptions
             app.component.mkrOptionsmenu = uimenu(app.component.TrackinPointgmenu);
-            app.component.mkrOptionsmenu.Text = 'markers options';
+            app.component.mkrOptionsmenu.Text = 'Options';
             app.component.mkrOptionsmenu.MenuSelectedFcn =createCallbackFcn(app, @mkrOptions, true);
 
             % delete markers
             app.component.mkrDeletemenu = uimenu(app.component.TrackinPointgmenu);
-            app.component.mkrDeletemenu.Text = 'markers delete';
+            app.component.mkrDeletemenu.Text = 'Delete';
             app.component.mkrDeletemenu.MenuSelectedFcn =createCallbackFcn(app, @mkrDelete, true);
-
-            % % calculation SWE (SWEcalculation)
-            % app.component.SWEcalculationmenu = uimenu(app.component.Piplinemenu);
-            % app.component.SWEcalculationmenu.Text = 'Structure';
-            % app.component.SWEcalculationmenu.MenuSelectedFcn =createCallbackFcn(app, @Pipline, true);
 
             % Tracking filter
             app.component.TrackingFiltermenu = uimenu(app.component.Bmodemenu);
             app.component.TrackingFiltermenu.Text = 'Filter';
             %            app.component.TrackingFiltermenu =createCallbackFcn(app, @Filter, true);
+
+            % Associate markers
+            app.component.associateMkrmenu = uimenu(app.component.Bmodemenu);
+            app.component.associateMkrmenu.Text = 'Associate markers';
+
+            % set
+            app.component.associateMkrSetmenu = uimenu(app.component.associateMkrmenu);
+            app.component.associateMkrSetmenu.Text = 'Set';
+            app.component.associateMkrSetmenu.MenuSelectedFcn =createCallbackFcn(app, @associateMkr, true);
+
+            % delete
+            app.component.associateMkrDeletemenu = uimenu(app.component.associateMkrmenu);
+            app.component.associateMkrDeletemenu.Text = 'Delete';
+            % app.component.associateMkrDeletemenu.MenuSelectedFcn =createCallbackFcn(app, @associateMkr, true);
+
+            app.component.associateMkrOptionsmenu = uimenu(app.component.associateMkrmenu);
+            app.component.associateMkrOptionsmenu.Text = 'Options';
+            % app.component.associateMkrDeletemenu.MenuSelectedFcn =createCallbackFcn(app, @associateMkr, true);
+
+            % advenced tools
+            app.component.advencedToolsmenu = uimenu(app.component.Bmodemenu);
+            app.component.advencedToolsmenu.Text = 'Advenced tools';
+
+            % find intersect
+            app.component.findIntersectmenu = uimenu(app.component.advencedToolsmenu);
+            app.component.findIntersectmenu.Text = 'Find intersect';
+
+            % angle between
+            app.component.angleBetweenmenu = uimenu(app.component.advencedToolsmenu);
+            app.component.angleBetweenmenu.Text = 'Angle between';
+
+            % distance between
+            app.component.distanceBetweenmenu = uimenu(app.component.advencedToolsmenu);
+            app.component.distanceBetweenmenu.Text = 'Distance between';
 
             %%  MenuBar --> greylevel
             app.component.greyLevelmenu = uimenu(app.component.figure);
@@ -421,9 +446,34 @@ classdef App_Echo < matlab.apps.AppBase
                     end
                 catch
                 end
+            end
 
-                % linear function
 
+            if ~isempty(app.video(app.variables.videoindex).memory_fitting)
+                % tracking point
+                try
+                    for ii = 1 : size(app.video(app.variables.videoindex).memory_fitting.funTracked,2)
+                        lineQuality = 5;
+                        linePlot = app.video(app.variables.videoindex).memory_fitting.funTracked(ii).limInf : lineQuality : app.video(app.variables.videoindex).memory_fitting.funTracked(ii).limSup ;
+
+                        plot(app.component.Axes, ...
+                            linePlot, ...
+                            app.video(app.variables.videoindex).memory_fitting.funTracked(ii).fun(currentFrame).frame(linePlot), ...
+                            'Color',app.video(app.variables.videoindex).memory_fitting.funTracked(ii).color, ...
+                            'lineStyle',app.video(app.variables.videoindex).memory_fitting.funTracked(ii).lineStyle,...
+                            'lineWidth',app.video(app.variables.videoindex).memory_fitting.funTracked(ii).lineWidth)
+
+                        text(app.component.Axes,...
+                            mean(linePlot), ...
+                            mean(app.video(app.variables.videoindex).memory_fitting.funTracked(ii).fun(currentFrame).frame(linePlot))+ 30, ...
+                            app.video(app.variables.videoindex).memory_fitting.funTracked(ii).name,...
+                            'Color',app.video(app.variables.videoindex).memory_fitting.funTracked(ii).color,...
+                            'FontSize',16,...
+                            'HorizontalAlignment','left',...
+                            'FontWeight','bold')
+                    end
+                catch
+                end
             end
         end
 
@@ -449,6 +499,7 @@ classdef App_Echo < matlab.apps.AppBase
                     app.video(i).memory_tracking = [];
                     app.video(i).memory_SWE = [];
                     app.video(i).memory_grey_level = [];
+                    app.video(i).memory_fitting = [];
                     app.video(i).memory_processing = [];
                 end
 
@@ -484,18 +535,21 @@ classdef App_Echo < matlab.apps.AppBase
             cd(app.general.path.General)
             for i= 1 : nVideo
                 saveName  = string([app.video(i).name(1:end-4),'_results.mat']) ;
-                swe = []; tracking = []; grey_level = [];
+                swe = []; tracking = []; grey_level = []; fitting = [];
                 if ~isempty(app.video(i).memory_SWE)
                     swe = app.video(i).memory_SWE;
                 end
                 if ~isempty(app.video(i).memory_tracking)
                     tracking = app.video(i).memory_tracking;
                 end
+                if ~isempty(app.video(i).memory_fitting)
+                    fitting = app.video(i).memory_fitting;
+                end
                 if ~isempty(app.video(i).memory_grey_level)
                     grey_level = app.video(i).memory_grey_level;
                 end
 
-                save(saveName,"swe","tracking","grey_level",'-mat')
+                save(saveName,"swe","tracking","grey_level","fitting",'-mat')
             end
             cd(app.general.path.App)
         end
@@ -573,7 +627,6 @@ classdef App_Echo < matlab.apps.AppBase
                 end
             end
         end
-
 
         %% setZoneOfInterestBmode
         function setZoneOfInterestBmode(app,event)
@@ -665,6 +718,29 @@ classdef App_Echo < matlab.apps.AppBase
                 end
             end
         end
+
+        %% associateMkr
+        function associateMkr(app,~)
+            if isempty(app.video)
+                errordlg('You have to import a video before', 'Error')
+            else
+                if size(app.video(app.variables.videoindex).memory_tracking,2)>2 % is there a r a video selected
+                    errordlg('You have to track at list two markers before', 'Error')
+                else
+                    if isempty(app.video(app.variables.videoindex).memory_fitting)
+                        nbfitting = 1;
+                    else
+                        nbfitting = size(app.video(app.variables.videoindex).memory_fitting.funTracked,2) + 1;
+                    end
+
+                    funTracked = app.general.fun.associateMkr(app.video(app.variables.videoindex).frame,app.video(app.variables.videoindex).memory_tracking);
+                    if ~isempty(funTracked)
+                        app.video(app.variables.videoindex).memory_fitting.funTracked(nbfitting) = funTracked;
+                    end
+                end
+            end
+        end
+
         %% function Pipline
         function Pipline(app,event)
             if isempty(app.video(app.variables.videoindex).memory_tracking) % is there a r a video selected
