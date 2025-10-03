@@ -5,10 +5,8 @@ video =  uiGetVideo();                                                     % get
 videoIndex = 1;                                                            % first video selected 
 frameIndex = 1; % first frame to set the shape 
 
-selected_frame = video(videoIndex).frame{1};                               % first frame of the video 
-
 %% improve video quality for tracking
-coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
+% coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
 % video(videoIndex).frame_improved = enhanceFrames(video(videoIndex).frame,coord);
 
 frameRead(video(videoIndex).frame,frameIndex)
@@ -38,29 +36,18 @@ Image_ = corpImageAsRectangle(selected_frame,X,Y,heigthImage,widthImage);  % ima
 
 method = "Crop";                                                           % method for image border 
 
-tic
-[errMatrix] = compareImage2Pattern(Image_,templateImage,method);           % template matching correlation 
-toc
-plotErrorMartixAndImage(errMatrix,Image_)
-mean(errMatrix,'all','omitmissing')
+% more for colored images 
+% tic
+% [errMatrix] = compareImage2Pattern(Image_,templateImage,method);           % template matching correlation 
+% toc
+% plotErrorMartixAndImage(errMatrix,Image_)
+% mean(errMatrix,'all','omitmissing')
 
-tic
-[errMatrix] = SDD_matching(Image_,templateImage,"mean_distance");           % template matching correlation 
-toc
+[corrMatrix] = NCC_matching(Image_,templateImage);                         % template matching correlation 
+
+[errMatrix] = SDD_matching(Image_,templateImage,"rmse");                   % template matching error
 x_err = mean(errMatrix,'all','omitmissing');
 plotErrorMartixAndImage(errMatrix,Image_,x_err)
-
-tic
-[errMatrix] = SDD_matching(Image_,templateImage,"rmse");           % template matching correlation 
-toc
-x_err = mean(errMatrix,'all','omitmissing');
-plotErrorMartixAndImage(errMatrix,Image_,x_err)
-
-tic
-[corrMatrix] = NCC_matching(Image_,templateImage);           % template matching correlation 
-toc
-
-
 [rowOffset,colOffset,~] = minError(errMatrix);                             % position and error 
 
 % illustration 
@@ -69,7 +56,7 @@ plotHeatMapErrorMatrix(errMatrix)
 plot3DErrorMatrix(errMatrix)
 plot3DErrorMatrixImage(errMatrix,Image_)
 
-%% 2/ tracking process (template matching correlation on a video) 
+%% 2/ tracking process (template matching errors on a video) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % warning on template drift set up ( n : nPixCol, m: nPixRow ) this
 % algorithm performence is O(n x m).
@@ -459,6 +446,18 @@ funTracked(3).lineWidth=1.5;
 
 videoTrackingRead(frames, video.videoObject,mkrTracked,funTracked)
 
+%% find intersection between function 
+[x_intersect,y_intersect] = findIntersect(deepApponevroses_fun(1).framecm,muscleFibers_fun(1).framecm);
+theta_deg = angleBetweenFunctions(deepApponevroses_fun(1).framecm,muscleFibers_fun(1).framecm, x_intersect);
 
-[x_intersect,y_intersect]= findIntersect(deepApponevroses_fun(1).framecm,muscleFibers_fun(1).framecm)
-theta_deg = angleBetweenFunctions(deepApponevroses_fun(1).framecm,muscleFibers_fun(1).framecm, x_intersect)
+
+
+%% cluster analysis 
+coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
+
+frames = cropVideo(video(videoIndex).frame,coord);
+interst_frame = frames{1};
+
+[x,y,x_moyen,y_moyen] = uiFrameCorrelationClusterAnalysis(interst_frame);
+
+
