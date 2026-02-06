@@ -3,7 +3,7 @@ function [X,Y] = setPoint(selected_frame,fig)
     click_Y = [];                                                      % global variable for click position 
 
     if nargin <2
-        fig = figure('Name', 'frame read','Color', [1 1 1]);%,'ToolBar','none','MenuBar','none'); % figure
+        fig = figure('Name', 'set point','Color', [1 1 1]);%,'ToolBar','none','MenuBar','none'); % figure
     end
 
     axes_im = axes('Parent', fig ,'Position',[0 0 1 1]) ;              % axis

@@ -51,9 +51,14 @@ btn_load.ButtonPushedFcn =  @(btn,event) files_import(fig,btn_load,btn_clear,btn
 %% UI end
 %%%%%%%%%%%%%%%%%%%%
 uiwait(fig);
-for ii = 1 : length(videoExported)
-    formatSpec = 'video :" %s " is import to the workspace\n';
-    fprintf(formatSpec,videoExported(ii).path);
+try
+    for ii = 1 : length(videoExported)
+        formatSpec = 'video :" %s " is import to the workspace\n';
+        fprintf(formatSpec,videoExported(ii).path);
+    end
+catch
+    disp('no video imported')
+    videoExported = [];
 end
 delete(fig)
 
@@ -66,44 +71,43 @@ delete(fig)
             '*.*'  ,'Tous les Fichiers (*.*)';},...
             'Select your video','MultiSelect', 'on');
         f = {};% le ou les fichiers
-
-        if iscell(f_)
-            for i= 1:size(f_,2)
-                f{i} =char(strcat(pathname,f_(i)));
-            end
-        elseif ischar(f_)
-            f{1} = char(strcat(pathname,f_));
-        end
-
-        if length(f) == 1
-            f_ = string(f_);
-        end
-
-
-        if isempty(video) == 1
-            for i = 1 : length(f_)
-                video(i).path = f{i};
-                video(i).name = f_{i};
-                items(i) = string(f{i}) ;
+        try
+            if iscell(f_)
+                for i= 1:size(f_,2)
+                    f{i} =char(strcat(pathname,f_(i)));
+                end
+            elseif ischar(f_)
+                f{1} = char(strcat(pathname,f_));
+                f_ = string(f_);
             end
 
-        else
-            lbeg = length(video);
-            for i = 1 : length(f_)
-                video(i + lbeg).path = f{i};
-                video(i + lbeg).name = f_{i};
+            if isempty(video) == 1
+                for i = 1 : length(f_)
+                    video(i).path = f{i};
+                    video(i).name = f_{i};
+                    items(i) = string(f{i}) ;
+                end
+            else
+                lbeg = length(video);
+                for i = 1 : length(f_)
+                    video(i + lbeg).path = f{i};
+                    video(i + lbeg).name = f_{i};
+                end
             end
+
+            for i = 1 : length(video)
+                items(i) = string(video(i).path) ;
+            end
+
+
+            bxl.Items = items;
+            btn_clear.Enable = "on" ;
+            btn_load.Enable = "on" ;
+            fig.WindowStyle = 'modal';
+        catch M
+            disp(M)
+            disp('error in import process')
         end
-
-        for i = 1 : length(video)
-            items(i) = string(video(i).path) ;
-        end
-
-
-        bxl.Items = items;
-        btn_clear.Enable = "on" ;
-        btn_load.Enable = "on" ;
-        fig.WindowStyle = 'modal';
     end
 
 % clear
@@ -120,7 +124,7 @@ delete(fig)
         btn_clear.Enable ="off";
         btn_search.Enable ="off";
         for videoidx = 1 : length(video)
-%             videoExported(videoidx) = importVideo(video(videoidx).path,video(videoidx).name);
+            %             videoExported(videoidx) = importVideo(video(videoidx).path,video(videoidx).name);
             videoExported(videoidx) = importVideo(video(videoidx).path,video(videoidx).name,fig);
 
         end
