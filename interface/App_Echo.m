@@ -54,27 +54,37 @@ classdef App_Echo < matlab.apps.AppBase
             app.component.CalibrationBModemenu.Text = 'Calibration of B-mode';
             app.component.CalibrationBModemenu.MenuSelectedFcn =createCallbackFcn(app, @SetUpBMode, true);
 
-            % Tracking tools
-            app.component.TrackinPointgmenu = uimenu(app.component.Bmodemenu);
-            app.component.TrackinPointgmenu.Text = 'Tracking';
+            % Remove the square of swe
+            app.component.RemoveSquaremenu = uimenu(app.component.SetUpBModemenu);
+            app.component.RemoveSquaremenu.Text = 'Remove SWE square';
+            app.component.RemoveSquaremenu.MenuSelectedFcn =createCallbackFcn(app, @RemoveSquare, true);
+
+            % Improve of B-mode
+            app.component.ImproveBModemenu = uimenu(app.component.SetUpBModemenu);
+            app.component.ImproveBModemenu.Text = 'Improve contrast of B-mode';
+            app.component.ImproveBModemenu.MenuSelectedFcn =createCallbackFcn(app, @ImproveBMode, true);
 
             % Tracking tools
-            app.component.TrackinManualgmenu = uimenu(app.component.TrackinPointgmenu);
-            app.component.TrackinManualgmenu.Text = 'Manual';
-            app.component.TrackinManualgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+            app.component.TrackinPointmenu = uimenu(app.component.Bmodemenu);
+            app.component.TrackinPointmenu.Text = 'Tracking';
 
             % Tracking tools
-            app.component.TrackinSemiAutomaticgmenu = uimenu(app.component.TrackinPointgmenu);
+            app.component.TrackinManualmenu = uimenu(app.component.TrackinPointmenu);
+            app.component.TrackinManualmenu.Text = 'Manual';
+            app.component.TrackinManualmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
+
+            % Tracking tools
+            app.component.TrackinSemiAutomaticgmenu = uimenu(app.component.TrackinPointmenu);
             app.component.TrackinSemiAutomaticgmenu.Text = 'Semi automatic';
             app.component.TrackinSemiAutomaticgmenu.MenuSelectedFcn =createCallbackFcn(app, @Tracking_point, true);
 
             % set mkrOptions
-            app.component.mkrOptionsmenu = uimenu(app.component.TrackinPointgmenu);
+            app.component.mkrOptionsmenu = uimenu(app.component.TrackinPointmenu);
             app.component.mkrOptionsmenu.Text = 'Options';
             app.component.mkrOptionsmenu.MenuSelectedFcn =createCallbackFcn(app, @mkrOptions, true);
 
             % delete markers
-            app.component.mkrDeletemenu = uimenu(app.component.TrackinPointgmenu);
+            app.component.mkrDeletemenu = uimenu(app.component.TrackinPointmenu);
             app.component.mkrDeletemenu.Text = 'Delete';
             app.component.mkrDeletemenu.MenuSelectedFcn =createCallbackFcn(app, @mkrDelete, true);
 
@@ -662,6 +672,39 @@ classdef App_Echo < matlab.apps.AppBase
             end
         end
 
+        %% ImproveBMode (OK)
+        function ImproveBMode(app,~)
+            if isempty (app.video) % no video import / impossible
+                errordlg('You have to import video before','unavailable process')
+            else
+                coord = app.general.fun.getBmodeCoordinates(app.video(app.variables.videoindex).frame{app.variables.frameindex});
+                frames = app.general.fun.enhanceFrames(app.video(app.variables.videoindex).frame,coord);
+                app.video(app.variables.videoindex).frame = frames;
+            end
+        end
+
+        %% RemoveSquare (OK)
+        function RemoveSquare(app,~)
+            if isempty (app.video) % no video import / impossible
+                errordlg('You have to import video before','unavailable process')
+            else
+                frames = app.general.fun.video_remove_square(app.video(app.variables.videoindex).frame);
+
+                imshow(frames{app.variables.frameindex})
+
+                answer = questdlg('Is the process correct?', ...
+                    'Confirmation', ...
+                    'Yes','No','Yes');
+
+                if strcmp(answer,'No')
+                    disp('No')
+                else
+                    app.video(app.variables.videoindex).frame = frames;
+                end
+            end
+        end
+
+
         %% Tracking_point (ok)
         function Tracking_point(app,event)
             try
@@ -674,20 +717,24 @@ classdef App_Echo < matlab.apps.AppBase
             try
                 if string(event.Source.Text)  == "Manual"
                     [rateOfChange] =  setRateOfChange(app.video(app.variables.videoindex).videoObject.NumFrames);
-                    [row_,col_] = app.general.fun.manualTracking(app.video(app.variables.videoindex).frame,rateOfChange);
+                    [row_,col_,n_mkr_out] = app.general.fun.manualLineTracking(app.video(app.variables.videoindex).frame,rateOfChange);
+
                 elseif string(event.Source.Text)  == "Semi automatic"
                     [row_,col_] = app.general.fun.uiTracking(app.video(app.variables.videoindex).frame);
+                    n_mkr_out = 1;
                 end
 
-                %% add to memory
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).row=row_;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).col=col_;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).y=row_ .* app.video(app.variables.videoindex).coef.y;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).x=col_ .* app.video(app.variables.videoindex).coef.x;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).color='y';
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).marker='s';
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).markerSize=8;
-                app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr).mkrName=['no name ',num2str(nbmkr)];
+                for i = 1 : n_mkr_out
+                    % add to memory
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).row=row_(i,:);
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).col=col_(i,:);
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).y=row_(i,:) .* app.video(app.variables.videoindex).coef.y;
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).x=col_(i,:) .* app.video(app.variables.videoindex).coef.x;
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).color='y';
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).marker='s';
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).markerSize=8;
+                    app.video(app.variables.videoindex).memory_tracking.mkrTracked(nbmkr+i-1).mkrName=['no name ',num2str(nbmkr+i-1)];
+                end
             catch
                 errordlg('You have to import video first','error')
             end
@@ -706,7 +753,7 @@ classdef App_Echo < matlab.apps.AppBase
             end
         end
 
-                %% mkrOptions
+        %% mkrOptions
         function mkrDelete(app,~)
             if isempty(app.video)
                 errordlg('You have to import a video before', 'Error')

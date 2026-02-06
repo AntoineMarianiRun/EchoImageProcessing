@@ -1,23 +1,14 @@
 function [box] = getBmodeCoordinates(frame)
-frame2D = im2gray(frame);
+frame2D = im2gray(frame);% image(frame2D)
 
 % avoid video inforamtion 
 frame2D(1:160,:) = 0; % header 
-
 frame2D(end-50:end,:) = 0; % buttum information 
 
-frame2D(:,end-100:end) = 0; % right information 
+trueFalse = frame2D>3;% image(trueFalse.*255)
 
-frame2D(:, 1:201) = 0; % left information 
-
-% trashold = median(frame2D,'all') ;
-% trueFalse = frame2D>trashold;
-
-
-trueFalse = frame2D>1.5;
-
-x = mean(trueFalse,1) >.1;
-y = mean(trueFalse,2)' >.1;
+x = mean(trueFalse,1) >.3; % represente at least 30% of the image 
+y = mean(trueFalse,2)' >.1; % represente at least 30% of the image 
 
 %% n box
 %%%%%%%%%

@@ -12,16 +12,21 @@ function global_frames = enhanceFrames(frames, ROI)
 %
 % Author: Ophelie LARIVIERE, Last review: 24/04/2025
 
+if nargin<2
+    ROI.x = 1 : size(frames{1},2);
+    ROI.y = 1 : size(frames{1},1);
+end
+
 if length(ROI.x) == 2
     ROI.x = ROI.x(1):ROI.x(2);
 else
-    ROI.x = 1
+    ROI.x = 1;
 end 
 
 if length(ROI.y) == 2
     ROI.y = ROI.y(1):ROI.y(2);
 else
-    ROI.y = 12
+    ROI.y = 12;
 end 
 
 
