@@ -9,13 +9,24 @@ frameIndex = 1; % first frame to set the shape
 % coord = getBmodeCoordinates(video(videoIndex).frame{frameIndex});
 % video(videoIndex).frame_improved = enhanceFrames(video(videoIndex).frame,coord);
 
+[video(videoIndex).frame] = video_remove_square(video(videoIndex).frame);
+
+% save le process 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+videoProcessedSave(video(videoIndex).frame, video(videoIndex).videoObject)
+
+videoRead(video(videoIndex).frame,video(videoIndex).videoObject)
 frameRead(video(videoIndex).frame,frameIndex)
-% frameRead(video(videoIndex).frame_improved,frameIndex)
 
 %%
 % video(videoIndex).frame = video(videoIndex).frame_improved;
 
 selected_frame = video(videoIndex).frame{1};                               % first frame of the video 
+coord_ = getBmodeCoordinates(selected_frame);
+video(videoIndex).frame = cropVideo(video(videoIndex).frame,coord_);
+videoRead(video(videoIndex).frame,video(videoIndex).videoObject)
+selected_frame = video(videoIndex).frame{1};                               % first frame of the video 
+
 
 %% set a template
     % set the template (heigth, width, position)
@@ -459,5 +470,3 @@ frames = cropVideo(video(videoIndex).frame,coord);
 interst_frame = frames{1};
 
 [x,y,x_moyen,y_moyen] = uiFrameCorrelationClusterAnalysis(interst_frame);
-
-
