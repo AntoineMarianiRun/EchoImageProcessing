@@ -39,9 +39,9 @@ end
 idx = idx+1;
 
 timeBmode = time.Bmode;
-fs_swe = round(1/mean(diff(timeBmode(idx))),1);
-first_frame = idx(1);
-
+fs_swe = round(1/mean(diff(timeBmode(idx))),1); % fs
+first_frame = idx(1); % first frame
+first_frame = checkFirstFrame(first_frame,fs_swe);
 idxSWE = first_frame : round(mean(delta_)) : length(timeBmode);
 timeSWE = timeBmode(idxSWE);
 
@@ -65,8 +65,9 @@ if state ~= "sucess"
     fs_swe = str2double(extractAfter(fs_swe, '/'));
 
     changing_frame = findchangingframeRecursive(pctChange,50);
-
     first_frame = changing_frame(1);
+    first_frame = checkFirstFrame(first_frame,fs_swe);
+
     timeSWE = timeBmode(first_frame) : fs_swe : max(timeBmode);
     idxSWE = nan(1);
     for i = 1 : length(timeSWE)
@@ -104,4 +105,13 @@ if length(changing_frame)<2
     changing_frame = findchangingframeRecursive(pctChange,trashold);
 end 
 
+end
+
+function first_frame = checkFirstFrame(first_frame,fs_swe)
+ % avoid error in first frame determination
+if first_frame> round(30/fs_swe)
+    period_ = round(30/fs_swe);
+    n_missing = floor(first_frame/period_);
+    first_frame = first_frame - (n_missing*period_);
+end
 end

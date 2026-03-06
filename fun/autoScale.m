@@ -17,7 +17,7 @@ end
 video.time.Bmode = time;
 
 try
-    [coef_x,coef_y] = autoScaleEcho(frame); % automatic 
+    [coef_x,coef_y] = autoScaleEcho(frame); % automatic
     video.coef.x = coef_x;
     video.coef.y = coef_y;
 
@@ -54,9 +54,15 @@ if mean(isColor(left_top_corner),"all")>0.001 % 1% of image is composed of color
         [colorScaleRGBuint8,colorScaleRGBdouble] = getDefaultColorScale();     % get the scale color
     end
 
-    % auto ophelie 
-    colorScaleValue = linspace(0,300,length(colorScaleRGBdouble));
-    % ShowColorScale(colorScaleRGBuint8,colorScaleValue)
+    % auto ophelie
+    try
+        max_value = findSWEValue(left_top_corner)./3;% module de mu
+        colorScaleValue = linspace(0,max_value,length(colorScaleRGBdouble));
+
+    catch
+        colorScaleValue = linspace(0,200,length(colorScaleRGBdouble));
+    end
+    ShowColorScale(colorScaleRGBuint8,colorScaleValue)
 
     video.colorScale.colorScaleRGBuint8 = colorScaleRGBuint8;
     video.colorScale.colorScaleRGBdouble = colorScaleRGBdouble;
@@ -64,11 +70,44 @@ if mean(isColor(left_top_corner),"all")>0.001 % 1% of image is composed of color
 
 
     % auto frame rate
-    [video.time.SWE,video.time.SWindex,state] = autoSWEFrameRate(video.frame,video.colorScale,video.coef,video.time);
+    try
+        [video.time.SWE,video.time.SWindex,state] = autoSWEFrameRate(video.frame,video.colorScale,video.coef,video.time);
+    catch
+        close force
+        video.time.SWE = video.time.Bmode;
+        video.time.SWindex = 1 : length(video.time.Bmode);
+        state = "fail";
+    end
     % if state == "fail"
     %     [video.time.SWE,video.time.SWindex]= setSSIFrameRate(frames,time);
     % end
 else
     video.colorScale = "None";
-end 
+end
+end
+
+function max_value = findSWEValue(left_top_corner)
+
+trashold = max(mean(isColor(left_top_corner),2));
+tf = mean(isColor(left_top_corner),2)>trashold./2;
+idx = find(tf == 1,1,"first")-1;
+
+img = left_top_corner(idx-40 : idx, ...
+    150:end, ...
+    :);
+
+img = rgb2gray(img);      % convert to grayscale
+img = imadjust(img);                  % improve contrast
+img = imbinarize(img);                % convert to binary
+img = imresize(img,2);                % enlarge small text
+
+
+
+r=ocr(img);
+boxes = r.WordBoundingBoxes;    % coordonnées de chaque mot
+words = r.Words;                 % texte de chaque mot
+numbers = regexp(words,'\d+\.?\d*','match');   % extract integers or decimals
+numbers = [numbers{:}];                        % flatten cell array
+max_value = str2double(numbers);                  % convert to numeric
+
 end
