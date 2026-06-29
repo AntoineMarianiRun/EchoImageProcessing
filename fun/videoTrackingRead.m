@@ -27,7 +27,7 @@ fig = figure('Name', 'Video Playback', 'Color', [1 1 1],...
 frameRate = 1 / video_object.FrameRate;
 
 % Loop through frames and display them
-for current_frame = 1 : 2 : video_object.NumFrames
+for current_frame = 1 : video_object.NumFrames
     tic;
     % Display the current frame
     im = axes('Parent', fig, 'Position', [0 0 1 1]);
@@ -52,6 +52,21 @@ for current_frame = 1 : 2 : video_object.NumFrames
             "LineStyle",funTracked(fun).lineStyle, ...
             "LineWidth",funTracked(fun).lineWidth)
     end
+
+    % Position at top-center
+    xPos = im.XLim(1)+200;
+    yPos = im.YLim(2)-200; 
+
+    % Add text
+    text(xPos, yPos, sprintf('%d', current_frame), ...
+        'Color', 'k', ...
+        'FontSize',30,...
+        'BackgroundColor','w',...
+        'HorizontalAlignment', 'center', ...
+        'VerticalAlignment', 'top', ...
+        'FontWeight', 'bold');
+
+    hold off
 
     % Calculate wait time to maintain frame rate
     elapsedTime = toc;

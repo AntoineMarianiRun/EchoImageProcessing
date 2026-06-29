@@ -1,151 +1,145 @@
 function videoExported = uiGetVideo()
-video = [] ; % intitialized
-%% UI configuration
-%%%%%%%%%%%%%%%%%%%%
-fig = uifigure('Name', 'Video import tool');
-fig.Color =  [1 1 1];
-fig.Position(3:4) =  [450 300]; %  w h
-fig.CloseRequestFcn = @(src,event)closereq(src);
-fig.WindowStyle ="modal";
+%UIGETVIDEO  Select and import one or more .avi videos through a modal UI.
+%
+%   videoExported = UIGETVIDEO() opens a modal dialog that lets the user
+%   browse for video files, queue them in a list, clear the queue, and
+%   import the queued files. The call blocks (uiwait) until the user either
+%   imports the files or closes the window.
+%
+%   Output
+%   ------
+%   videoExported : struct array returned by importVideo(), one element per
+%                   imported file. Returns [] if the user imports nothing.
+%
+%   Dependency
+%   ----------
+%   importVideo(path, name, parentFig) must be on the MATLAB path and must
+%   return a struct (the .path field is used for the console summary).
+%
+%   Example
+%   -------
+%       vids = uiGetVideo();
+%       if ~isempty(vids)
+%           disp(vids(1).path);
+%       end
 
-% files list
-bxl = uilistbox('Parent', fig) ;
-bxl.Items = {'Select your video files'};
-bxl.Position = [50 100 250 180] ;
+    % ------------------------------------------------------------------ %
+    %  Shared state (nested functions can read/write these variables)     %
+    % ------------------------------------------------------------------ %
+    video         = struct('path', {}, 'name', {});  % queued files (0x0)
+    videoExported = [];                              % return value
 
-% search files btn
-btn_search = uibutton('push','Parent',fig);
-btn_search.Text = {'Search', 'video' , 'files'} ;
-btnX1 = 350;
-btnY1 = 200;
-btnWidth1 = 70;
-btnHeight1 = 80;
-btn_search.Position = [btnX1 btnY1 btnWidth1 btnHeight1];
+    % ------------------------------------------------------------------ %
+    %  Build the UI                                                        %
+    % ------------------------------------------------------------------ %
+    fig = uifigure('Name', 'Video import tool', ...
+                   'Color', [1 1 1], ...
+                   'WindowStyle', 'modal');
+    fig.Position(3:4)   = [450 300];                 % [width height]
+    fig.CloseRequestFcn = @onClose;
 
-% clear files btn
-btn_clear = uibutton('push','Parent',fig);
-btn_clear.Text = 'clear video files' ;
-btn_clear.Enable = "off" ;
-btnX2 = 350;
-btnY2 = 100;
-btnWidth2 = 70;
-btnHeight2 = 80;
-btn_clear.Position = [btnX2 btnY2 btnWidth2 btnHeight2];
+    bxl = uilistbox(fig, ...
+        'Items',    {'Select your video files'}, ...
+        'Position', [50 100 250 180]);
 
-% load files btn
-btn_load = uibutton('push','Parent',fig);
-btn_load.Text = 'Import video files' ;
-btn_load.Enable = "off" ;
-btnX3 = 125;
-btnY3 = 50;
-btnWidth3 = 200;
-btnHeight3 = 22;
-btn_load.Position = [btnX3 btnY3 btnWidth3 btnHeight3];
+    btnSearch = uibutton(fig, 'push', ...
+        'Text',            'Search video files', ...
+        'Position',        [350 200 70 80], ...
+        'ButtonPushedFcn', @onSearch);
 
-% interation fnctions
-btn_search.ButtonPushedFcn = @(btn,event) search(bxl,btn_load,btn_clear,fig);
-btn_clear.ButtonPushedFcn = @(btn,event) files_clear(bxl,btn_load,btn_clear);
-btn_load.ButtonPushedFcn =  @(btn,event) files_import(fig,btn_load,btn_clear,btn_search);
+    btnClear = uibutton(fig, 'push', ...
+        'Text',            'Clear video files', ...
+        'Enable',          'off', ...
+        'Position',        [350 100 70 80], ...
+        'ButtonPushedFcn', @onClear);
 
+    btnLoad = uibutton(fig, 'push', ...
+        'Text',            'Import video files', ...
+        'Enable',          'off', ...
+        'Position',        [125 50 200 22], ...
+        'ButtonPushedFcn', @onLoad);
 
-%% UI end
-%%%%%%%%%%%%%%%%%%%%
-uiwait(fig);
-try
-    for ii = 1 : length(videoExported)
-        formatSpec = 'video :" %s " is import to the workspace\n';
-        fprintf(formatSpec,videoExported(ii).path);
-    end
-catch
-    disp('no video imported')
-    videoExported = [];
-end
-delete(fig)
+    % ------------------------------------------------------------------ %
+    %  Block until the user is done, then report and clean up             %
+    % ------------------------------------------------------------------ %
+    uiwait(fig);
 
-
-%% UI callbacks
-%%%%%%%%%%%%%%%%%%%%
-% search
-    function search(bxl,btn_load,btn_clear,fig)
-        [f_,pathname] = uigetfile({'*.avi','Video (*.avi)';...
-            '*.*'  ,'Tous les Fichiers (*.*)';},...
-            'Select your video','MultiSelect', 'on');
-        f = {};% le ou les fichiers
-        try
-            if iscell(f_)
-                for i= 1:size(f_,2)
-                    f{i} =char(strcat(pathname,f_(i)));
-                end
-            elseif ischar(f_)
-                f{1} = char(strcat(pathname,f_));
-                f_ = string(f_);
-            end
-
-            if isempty(video) == 1
-                for i = 1 : length(f_)
-                    video(i).path = f{i};
-                    video(i).name = f_{i};
-                    items(i) = string(f{i}) ;
-                end
-            else
-                lbeg = length(video);
-                for i = 1 : length(f_)
-                    video(i + lbeg).path = f{i};
-                    video(i + lbeg).name = f_{i};
-                end
-            end
-
-            for i = 1 : length(video)
-                items(i) = string(video(i).path) ;
-            end
-
-
-            bxl.Items = items;
-            btn_clear.Enable = "on" ;
-            btn_load.Enable = "on" ;
-            fig.WindowStyle = 'modal';
-        catch M
-            disp(M)
-            disp('error in import process')
+    if isempty(videoExported)
+        disp('No video imported.');
+    else
+        for ii = 1:numel(videoExported)
+            fprintf('Video "%s" imported to the workspace.\n', ...
+                    videoExported(ii).path);
         end
     end
 
-% clear
-    function files_clear(bxl,btn_load,btn_clear)
-        video = [] ;
-        bxl.Items = {'select your video files'};
-        btn_load.Enable = "off" ;
-        btn_clear.Enable = "off" ;
+    if isvalid(fig)
+        delete(fig);
     end
 
-% files_import
-    function files_import(fig,btn_load,btn_clear,btn_search)
-        btn_load.Enable ="off";
-        btn_clear.Enable ="off";
-        btn_search.Enable ="off";
-        for videoidx = 1 : length(video)
-            %             videoExported(videoidx) = importVideo(video(videoidx).path,video(videoidx).name);
-            videoExported(videoidx) = importVideo(video(videoidx).path,video(videoidx).name,fig);
+    % ================================================================== %
+    %  Nested callbacks                                                   %
+    % ================================================================== %
 
+    function onSearch(~, ~)
+        [files, pathname] = uigetfile( ...
+            {'*.avi', 'Video (*.avi)'; '*.*', 'All files (*.*)'}, ...
+            'Select your video(s)', 'MultiSelect', 'on');
+
+        if isequal(files, 0)            % user cancelled the file dialog
+            return
         end
+        if ~iscell(files)               % single file -> normalise to cell
+            files = {files};
+        end
+
+        base = numel(video);
+        for k = 1:numel(files)
+            video(base + k).path = fullfile(pathname, files{k}); %#ok<AGROW>
+            video(base + k).name = files{k};
+        end
+
+        bxl.Items       = {video.path};
+        btnClear.Enable = 'on';
+        btnLoad.Enable  = 'on';
+    end
+
+    function onClear(~, ~)
+        video           = struct('path', {}, 'name', {});
+        bxl.Items       = {'Select your video files'};
+        btnLoad.Enable  = 'off';
+        btnClear.Enable = 'off';
+    end
+
+    function onLoad(~, ~)
+        btnLoad.Enable   = 'off';
+        btnClear.Enable  = 'off';
+        btnSearch.Enable = 'off';
+
+        nVideos = numel(video);
+        for k = 1:nVideos
+            v = importVideo(video(k).path, video(k).name, fig);
+            if k == 1
+                videoExported = repmat(v, 1, nVideos);  % preallocate
+            end
+            videoExported(k) = v;
+        end
+
         uiresume(fig);
     end
 
-% close request
-    function closereq(fig)
-        selection = uiconfirm(fig,'Close the window?',...
-            'Confirmation');
-        if isempty(video)
-            switch selection
-                case 'OK'
-                    uiresume(fig)
-                    delete(fig)
-                case 'Cancel'
-                    return
+    function onClose(~, ~)
+        if ~isempty(video)
+            sel = uiconfirm(fig, ...
+                ['Some selected files have not been imported yet. ' ...
+                 'Close anyway?'], 'Confirmation', ...
+                'Options', {'Close', 'Cancel'}, ...
+                'DefaultOption', 2, 'CancelOption', 2);
+            if strcmp(sel, 'Cancel')
+                return
             end
-        else
-            % do nothing
-            delete(fig)
         end
+        videoExported = [];     % nothing was imported
+        uiresume(fig);          % let uiwait return; main body deletes fig
     end
 end

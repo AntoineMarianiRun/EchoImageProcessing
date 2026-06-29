@@ -454,7 +454,7 @@ funTracked(3).limSup = max([intersect_1.col;intersect_2.col]);
 funTracked(3).color='r';
 funTracked(3).lineStyle='-';
 funTracked(3).lineWidth=1.5;
-
+%%
 videoTrackingRead(frames, video.videoObject,mkrTracked,funTracked)
 
 %% find intersection between function 

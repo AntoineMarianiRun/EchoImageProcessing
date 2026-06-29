@@ -2,7 +2,7 @@ function figureFrameGreyHistogram(frameidx,results)
 
 % data
 Value = results.pixValue{results.frameIndex(frameidx)} ;
-greyScaleValue = linspace(0,1,100);% [0:1:255]./255;
+greyScaleValue = linspace(0,1,255);% [0:1:255]./255;
 map = repmat(greyScaleValue',[1,3]);
 
 nBarColors = length(greyScaleValue)-1;

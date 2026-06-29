@@ -13,7 +13,7 @@ coord = getBmodeCoordinates(frames{1});                                    % get
 
 for currentFrame= 1 : length(frames)                                       % for each frame
     frames{currentFrame} = remove_square(frames{currentFrame},coord(1));   % remove yellow box 
-    if mod(currentFrame,5)==1
+    if mod(currentFrame,2)==1
         d.Value = currentFrame / nbFrames;                                 % Update progress bar
     end
 end

@@ -3,20 +3,20 @@ function [output_frame] = remove_square(frame,coord)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [heigth_,width_, dim_] = size(frame); % image information
 
-out = zeros(heigth_,width_,dim_); % out matrix
+in = zeros(heigth_,width_,dim_); % out matrix
 
 if nargin == 2
     % remove the border 
     %%%%%%%%%%%%%%%%%%%
-    out(coord.y(1):coord.y(2), ...
+    in(coord.y(1):coord.y(2), ...
         coord.x(1):coord.x(2), ...
         1:dim_) = 1; % top border
 else
-    out = ones(heigth_,width_,dim_); % out matrix
+    in = ones(heigth_,width_,dim_); % out matrix
 end 
 
 M = frame;
-M(out==0) = 0; % matrix to work with
+M(in==0) = 0; % matrix to work with
 
 %% detect color square
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,7 +47,7 @@ output_frame = M;
 output_frame(~mask) = F(x(~mask), y(~mask));
 output_frame = repmat(output_frame,[1,1,3]);
 
-output_frame(out==0) = frame(out==0);
+output_frame(in==0) = frame(in==0);
 output_frame = uint8(output_frame);
 
 % figure

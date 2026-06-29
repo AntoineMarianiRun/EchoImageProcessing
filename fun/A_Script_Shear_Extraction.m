@@ -55,8 +55,16 @@ cd(currentForder)                                                          % go 
 disp(['results : ' , saveName,' is save in ', video(videoIndex).videoObject.Path])
 
 
-%% compare each pixel contains in the shape (for each Bmode image) to a grey scale 
+%% compare each pixel contains in the shape (for each Bmode image) to a grey scale
+% video(videoIndex).frame = video(videoIndex).frame(1:30);
+% video(videoIndex).frame = video_remove_square(video(videoIndex).frame); % take time 
+% video(videoIndex).videoObject.NumFrames = size(video(videoIndex).frame ,2);
+
+
 Shape = setSquareShape(video(videoIndex).frame{frameIndex});               % as a square 
+% displayShape(video(videoIndex).frame{1},Shape,0.4)
+
+% video(videoIndex).time.SWindex = 1 : size(video(videoIndex).frame ,2);
 
 frameindex = video(videoIndex).time.SWindex;                               % frameindex = 1 : video(videoIndex).videoObject.NumFrames;
 
@@ -66,6 +74,8 @@ frameindex = video(videoIndex).time.SWindex;                               % fra
     Shape, ...
     video(videoIndex).time.Bmode);
 
-figureFrameGreyHistogram(1,results)
+results.pixValue{20}(results.pixValue{20}<=0) = NaN(1);
+
+figureFrameGreyHistogram(20,results)
 
 figureGreyTemporalEvolution(results)

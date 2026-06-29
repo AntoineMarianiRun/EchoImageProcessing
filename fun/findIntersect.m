@@ -7,9 +7,9 @@ function [x_intersect,y_intersect] = findIntersect(fun1,fun2,precision)
 if nargin<3
     precision = 0.01; %cm
 end
-maxValue = round(1080 * 3 * precision); % 3 fois la longueur de l'image
+maxValue = round(1080 * 6); % 3 fois la longueur de l'image
 
-x = (0 : 0.01 : maxValue) - (maxValue/2); % distance vector
+x = (0 : precision : maxValue) - (maxValue/3); % distance vector
 
 y1 = fun1(x); % première fonction 
 y2 = fun2(x); % seconde fonction 
